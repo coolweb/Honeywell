@@ -1,0 +1,96 @@
+<div style="width:300px;height:100px;" class="eqLogic-widget eqLogic" data-eqLogic_id="#id#" data-eqLogic_uid="#uid#" data-version="#version#">
+    <center class="widget-name"><strong><a href="#eqLink#" style="font-size : 1.1em;">#name_display# <span style="font-size: 0.85em;position: relative;top:-2px;">#object_name#</span></a></strong></center>
+    <br />
+    <div class="row">
+        <center style="font-weight: bolder; font-size: 14pt">
+            #temperature# °C
+        </center>
+    </div>
+    <div class="row">
+        <center style="font-weight: bolder; font-size: 14pt">
+            <button type="button" name="temperatureDown" class="btn btn-primary">-</button><span name="setPoint">#wantedTemperature#</span>            °C<button type="button" name="temperatureUp" class="btn btn-primary">+</button>
+        </center>
+    </div>
+    <div class="row">
+        <center>
+            <div class="btn-group" data-toggle="buttons">
+                <label class="btn btn-secondary">
+                    <input type="radio" name="optionsSetPoint" id="scheduled" autocomplete="off">
+                     Auto
+                </label>
+                <label class="btn btn-secondary active">
+                    <input type="radio" name="optionsSetPoint" id="permanent" checked autocomplete="off">
+                    <span class="glyphicon glyphicon-repeat" title="Permanent"></span>
+                </label>
+                <label class="btn btn-secondary">
+                    <input type="radio" name="optionsSetPoint" id="min30" autocomplete="off"> 30 min
+                </label>
+                <label class="btn btn-secondary">
+                    <input type="radio" name="optionsSetPoint" id="min60" autocomplete="off"> 1h
+                </label>
+                <label class="btn btn-secondary">
+                    <input type="radio" name="optionsSetPoint" id="min120" autocomplete="off"> 2h
+                </label>
+            </div>
+        </center>
+    </div>
+</div>
+
+<script>
+    var timerChangeTemp = null;
+    var currentTemp = 0;
+    var tempStatus = 'permanent';
+
+    $('.eqLogic[data-eqLogic_uid=#uid#] button[name="temperatureUp"]').on('click', function () {
+        if (timerChangeTemp !== null) {
+            clearTimeout(timerChangeTemp);
+        }
+
+        timerChangeTemp = setTimeout(function () {
+            jeedom.cmd.execute({ id: '#SetTemperature_id#', value: {heatSetpoint: currentTemp, status: tempStatus}});
+        }, 2000);
+
+        currentTemp = $('.eqLogic[data-eqLogic_uid=#uid#] span[name="setPoint"]')[0].innerText;
+        currentTemp = Number(currentTemp) + 0.5;
+        $('.eqLogic[data-eqLogic_uid=#uid#] span[name="setPoint"]')[0].innerText = currentTemp;
+    });
+
+    $('.eqLogic[data-eqLogic_uid=#uid#] button[name="temperatureDown"]').on('click', function () {
+        if (timerChangeTemp !== null) {
+            clearTimeout(timerChangeTemp);
+        }
+
+        timerChangeTemp = setTimeout(function () {
+            jeedom.cmd.execute({ id: '#SetTemperature_id#' });
+        }, 2000);
+
+        var currentTemp = $('.eqLogic[data-eqLogic_uid=#uid#] span[name="setPoint"]')[0].innerText;
+        currentTemp = Number(currentTemp) - 0.5;
+        $('.eqLogic[data-eqLogic_uid=#uid#] span[name="setPoint"]')[0].innerText = currentTemp;
+    });
+
+    $('.eqLogic[data-eqLogic_uid=#uid#] .btn-group .btn input').on('change', function () {
+        var checkedId = $('.eqLogic[data-eqLogic_uid=#uid#] [name="optionsSetPoint"]:checked').attr('id');
+
+        if(checkedId === 'permanent'){
+            tempStatus = 'permanent';
+        }
+
+        if(checkedId === 'scheduled'){
+            tempStatus = 'scheduled';
+            jeedom.cmd.execute({ id: '#SetTemperature_id#', value: {heatSetpoint: currentTemp, status: tempStatus}});
+        }
+
+        if(checkedId === 'min30'){
+            tempStatus = '30';
+        }
+
+        if(checkedId === 'min60'){
+            tempStatus = '60';
+        }
+
+        if(checkedId === 'min120'){
+            tempStatus = '120';
+        }
+    });
+</script>

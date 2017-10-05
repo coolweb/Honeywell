@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<info>
+    <id>honeywell</id>
+    <name>Honeywell Beta 0.1.0</name>
+    <description>Gestion des équipements Honeywell</description>
+    <icon>fa fa-keyboard-o</icon>
+    <licence>AGPL</licence>
+    <author>Christophe Jordens</author>
+    <installation>Aucune</installation>
+    <require>3.0.0</require>
+    <category>energy</category>
+    <version>0.1.0</version>
+</info>

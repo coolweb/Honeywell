@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/5.7/phpunit.xsd"
+         backupGlobals="false"
+         beStrictAboutCoversAnnotation="true"
+         beStrictAboutOutputDuringTests="true"
+         beStrictAboutTestsThatDoNotTestAnything="true"
+         beStrictAboutTodoAnnotatedTests="true"
+         verbose="true">
+    <php>
+        <var name="unitTest" value="true" />
+    </php>
+  <logging>
+    <log type="coverage-html" target="d:/temp/report" lowUpperBound="35"
+       highLowerBound="70"/>
+  </logging>
+  <filter>
+        <whitelist processUncoveredFilesFromWhitelist="true">
+            <directory suffix=".php">../core/class/</directory>
+        </whitelist>
+    </filter>
+    <testsuites>
+      <testsuite name="My Test Suite">
+        <directory>./</directory>
+      </testsuite>
+    </testsuites>    
+</phpunit>

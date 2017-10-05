@@ -1,0 +1,81 @@
+<div style="width:300px;height:100px;" class="eqLogic-widget eqLogic" data-eqLogic_id="#id#" data-eqLogic_uid="#uid#" data-version="#version#">
+    <center class="widget-name">
+        <strong>
+            <span class="glyphicon glyphicon-home"></span>
+            <a href="#eqLink#" style="font-size : 1.1em;">#name_display# <span style="font-size: 0.85em;position: relative;top:-2px;">#object_name#</span></a>
+        </strong>
+    </center>
+    <br />
+    <div class="row">
+        <div class="col-xs-10">
+            <center>
+                <div class="btn-group" data-toggle="buttons">
+                    <label class="btn btn-secondary active">
+                    <input type="radio" name="optionsAction" id="auto" checked autocomplete="off">
+                    <span class="glyphicon glyphicon-calendar" title="Suit la programmation"></span>
+                    Programmé
+                </label>
+                <label class="btn btn-secondary">
+                        <input type="radio" name="optionsAction" id="custom" autocomplete="off">
+                        <span class="glyphicon glyphicon-calendar"></span>
+                        Personalisé
+                    </label>
+                <label class="btn btn-secondary">
+                    <input type="radio" name="optionsAction" id="eco" autocomplete="off">
+                    <span class="glyphicon glyphicon-piggy-bank"></span>
+                    Eco
+                </label>
+                    <label class="btn btn-secondary">
+                    <input type="radio" name="optionsAction" id="away" autocomplete="off">
+                    <span class="glyphicon glyphicon-log-out"></span>
+                    Absent
+                </label>
+                    <label class="btn btn-secondary">
+                    <input type="radio" name="optionsAction" id="heatingOff" autocomplete="off">
+                    <span class="glyphicon glyphicon-off"></span>
+                    Off
+                </label>
+                    <label class="btn btn-secondary">
+                    <input type="radio" name="optionsAction" id="dayOff" autocomplete="off">
+                    <span class="glyphicon glyphicon-time"></span>
+                    Journée Off
+                </label>
+                </div>
+            </center>
+        </div>
+    </div>
+</div>
+
+<script>
+    $('.eqLogic[data-eqLogic_uid=#uid#] .btn-group .btn input').on('change', function () {
+        var checkedId = $('.eqLogic[data-eqLogic_uid=#uid#] [name="optionsAction"]:checked').attr('id');
+        var cmdToExecute;
+
+        if (checkedId === 'auto') {
+            cmdToExecute = '#autoCmdId';
+        }
+
+        if (checkedId === 'custom') {
+            cmdToExecute = '#customCmdId';
+        }
+
+        if (checkedId === 'eco') {
+            cmdToExecute = '#ecoCmdId';
+        }
+
+        if (checkedId === 'away') {
+            cmdToExecute = '#awayCmdId';
+        }
+
+        if (checkedId === 'heatingOff') {
+            cmdToExecute = '#heatingOffCmdId';
+        }
+
+        if (checkedId === 'dayOff') {
+            cmdToExecute = '#dayOffCmdId';
+        }
+
+        jeedom.cmd.execute({ id: cmdToExecute });
+    });
+
+</script>

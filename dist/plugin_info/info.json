@@ -1,0 +1,10 @@
+{
+    "id": "honeywell",
+    "name": "Honeywell Beta 0.1",
+    "licence": "AGPL",
+    "author": "Christophe Jordens",
+    "installation" : "Aucune",
+    "require": "3.0.0",
+    "category": "energy",
+    "version": "0.1.0"
+}
