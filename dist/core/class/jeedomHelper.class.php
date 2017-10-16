@@ -138,9 +138,9 @@ class JeedomHelper{
         $mc->remove();
         $mc = cache::byKey('honeywellWidgetdashboard' . $eqLogic->getId());
         $mc->remove();
-        //$eqLogic->toHtml('mobile');
-        //$eqLogic->toHtml('dashboard');
+        $eqLogic->toHtml('mobile');
+        $eqLogic->toHtml('dashboard');
 
-        //$eqLogic->refreshWidget();
+        $eqLogic->refreshWidget();
     }
 }

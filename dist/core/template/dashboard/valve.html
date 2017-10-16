@@ -37,60 +37,95 @@
 </div>
 
 <script>
-    var timerChangeTemp = null;
-    var currentTemp = 0;
-    var tempStatus = 'permanent';
+    var honeywell = honeywell || {};
+    honeywell.valves = honeywell.valves || [];
+
+    honeywell.valves['#uid#'] = honeywell.valves['#uid#'] ||
+     {
+        timerChangeTemp: null,
+        currentTemp: 0,
+        tempStatus: 'permanent',
+        until: undefined
+     };
 
     $('.eqLogic[data-eqLogic_uid=#uid#] button[name="temperatureUp"]').on('click', function () {
-        if (timerChangeTemp !== null) {
-            clearTimeout(timerChangeTemp);
+        if (honeywell.valves['#uid#'].timerChangeTemp !== null) {
+            clearTimeout(honeywell.valves['#uid#'].timerChangeTemp);
         }
 
-        timerChangeTemp = setTimeout(function () {
-            jeedom.cmd.execute({ id: '#SetTemperature_id#', value: {heatSetpoint: currentTemp, status: tempStatus}});
+        honeywell.valves['#uid#'].timerChangeTemp = setTimeout(function () {
+            honeywell.valves['#uid#'].until = new Date();
+            honeywell.valves['#uid#'].until.setMinutes(honeywell.valves['#uid#'].until.getMinutes() + 120);
+
+            jeedom.cmd.execute({ id: '#SetTemperature_id#', value: 
+            {
+                heatSetpoint: honeywell.valves['#uid#'].currentTemp, 
+                status: honeywell.valves['#uid#'].tempStatus, 
+                until: honeywell.valves['#uid#'].until.toJSON()}});
         }, 2000);
 
-        currentTemp = $('.eqLogic[data-eqLogic_uid=#uid#] span[name="setPoint"]')[0].innerText;
-        currentTemp = Number(currentTemp) + 0.5;
-        $('.eqLogic[data-eqLogic_uid=#uid#] span[name="setPoint"]')[0].innerText = currentTemp;
+        honeywell.valves['#uid#'].currentTemp = $('.eqLogic[data-eqLogic_uid=#uid#] span[name="setPoint"]')[0].innerText;
+        honeywell.valves['#uid#'].currentTemp = Number(honeywell.valves['#uid#'].currentTemp) + 0.5;
+        $('.eqLogic[data-eqLogic_uid=#uid#] span[name="setPoint"]')[0].innerText = honeywell.valves['#uid#'].currentTemp;
     });
 
     $('.eqLogic[data-eqLogic_uid=#uid#] button[name="temperatureDown"]').on('click', function () {
-        if (timerChangeTemp !== null) {
-            clearTimeout(timerChangeTemp);
+        if (honeywell.valves['#uid#'].timerChangeTemp !== null) {
+            clearTimeout(honeywell.valves['#uid#'].timerChangeTemp);
         }
 
-        timerChangeTemp = setTimeout(function () {
-            jeedom.cmd.execute({ id: '#SetTemperature_id#' });
+        honeywell.valves['#uid#'].timerChangeTemp = setTimeout(function () {
+            honeywell.valves['#uid#'].until = new Date();
+            honeywell.valves['#uid#'].until.setMinutes(honeywell.valves['#uid#'].until.getMinutes() + 120);
+            
+            jeedom.cmd.execute({ id: '#SetTemperature_id#', value: 
+            {
+                heatSetpoint: honeywell.valves['#uid#'].currentTemp, 
+                status: honeywell.valves['#uid#'].tempStatus, 
+                until: honeywell.valves['#uid#'].until.toJSON()}});
         }, 2000);
 
-        var currentTemp = $('.eqLogic[data-eqLogic_uid=#uid#] span[name="setPoint"]')[0].innerText;
-        currentTemp = Number(currentTemp) - 0.5;
-        $('.eqLogic[data-eqLogic_uid=#uid#] span[name="setPoint"]')[0].innerText = currentTemp;
+        honeywell.valves['#uid#'].currentTemp = $('.eqLogic[data-eqLogic_uid=#uid#] span[name="setPoint"]')[0].innerText;
+        honeywell.valves['#uid#'].currentTemp = Number(honeywell.valves['#uid#'].currentTemp) - 0.5;
+        $('.eqLogic[data-eqLogic_uid=#uid#] span[name="setPoint"]')[0].innerText = honeywell.valves['#uid#'].currentTemp;
     });
 
     $('.eqLogic[data-eqLogic_uid=#uid#] .btn-group .btn input').on('change', function () {
         var checkedId = $('.eqLogic[data-eqLogic_uid=#uid#] [name="optionsSetPoint"]:checked').attr('id');
 
         if(checkedId === 'permanent'){
-            tempStatus = 'permanent';
+            honeywell.valves['#uid#'].tempStatus = 'permanent';
         }
 
         if(checkedId === 'scheduled'){
-            tempStatus = 'scheduled';
-            jeedom.cmd.execute({ id: '#SetTemperature_id#', value: {heatSetpoint: currentTemp, status: tempStatus}});
+            honeywell.valves['#uid#'].tempStatus = 'scheduled';
+            var currentTemp = $('.eqLogic[data-eqLogic_uid=#uid#] span[name="setPoint"]')[0].innerText;
+            jeedom.cmd.execute({ id: '#SetTemperature_id#', value: {
+                heatSetpoint: honeywell.valves['#uid#'].currentTemp, 
+                status: honeywell.valves['#uid#'].tempStatus
+            }});
         }
 
         if(checkedId === 'min30'){
-            tempStatus = '30';
+            honeywell.valves['#uid#'].tempStatus = 'temporary';
+            
+            honeywell.valves['#uid#'].until = new Date();
+            honeywell.valves['#uid#'].until.setMinutes(honeywell.valves['#uid#'].until.getMinutes() + 30);
+            honeywell.valves['#uid#'].until.setMinutes(honeywell.valves['#uid#'].until.getMinutes() + 120);
         }
 
         if(checkedId === 'min60'){
-            tempStatus = '60';
+            honeywell.valves['#uid#'].tempStatus = 'temporary';
+            honeywell.valves['#uid#'].until = new Date();
+            honeywell.valves['#uid#'].until.setMinutes(honeywell.valves['#uid#'].until.getMinutes() + 60);
+            honeywell.valves['#uid#'].until.setMinutes(honeywell.valves['#uid#'].until.getMinutes() + 120);
         }
 
         if(checkedId === 'min120'){
-            tempStatus = '120';
+            honeywell.valves['#uid#'].tempStatus = 'temporary';
+            honeywell.valves['#uid#'].until = new Date();
+            honeywell.valves['#uid#'].until.setMinutes(honeywell.valves['#uid#'].until.getMinutes() + 120);
+            honeywell.valves['#uid#'].until.setMinutes(honeywell.valves['#uid#'].until.getMinutes() + 120);
         }
     });
 </script>

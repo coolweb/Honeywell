@@ -122,14 +122,6 @@ class honeywell extends eqLogic {
     }
     
     public function toHtml($_version = 'dashboard') {
-        $container = DI\ContainerBuilder::buildDevContainer();
-        
-        /**
-        * @var JeedomHelper
-        */
-        $jeedomHelper = $container->get('JeedomHelper');
-        $jeedomHelper->ClearCacheAndUpdateWidget($this);
-
         $replace = $this->preToHtml($_version); 
         $version = jeedom::versionAlias($_version);
         if (!is_array($replace)) {            

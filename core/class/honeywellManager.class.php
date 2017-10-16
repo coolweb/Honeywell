@@ -259,7 +259,25 @@ class HoneywellManager {
         }
         
         $this->honeywellProxy->ChangeTemperature($sessionId, $valveHoneywellId, $temperature);
-    }    
+    }
+    
+    /**
+    * Change a valve temperature until a time
+    *
+    * @param string $valveHoneywellId The id of the valve in honeywell
+    * @param number $temperature The desired temperature
+    * @param date $until Until the temperature should be set
+    */
+    public function SetTemperatureUntil($valveHoneywellId, $temperature, $until){
+        $sessionId = $this->userSessionManager->RetrieveSessionId();
+        if($sessionId == null)
+        {
+            $this->jeedomHelper->logWarning('Retrieving locations: No session id retrieved, probably bad user/password');
+            return null;
+        }
+        
+        $this->honeywellProxy->ChangeTemperature($sessionId, $valveHoneywellId, $temperature, 'Temporary', $until);
+    }
 
     /**
      * Up temperature by 0.5
@@ -348,9 +366,13 @@ class HoneywellManager {
 
         $heatSetpoint = 0;
         $mode = 'permanent';
+        $until;
         if(is_array($cmdOptions) && array_key_exists('heatSetpoint', $cmdOptions)){
             $heatSetpoint = $cmdOptions['heatSetpoint'];
             $mode = $cmdOptions['status'];
+            if($mode == 'temporary'){
+                $until = date_create($cmdOptions['until']);                
+            }
         } else {
             $heatSetpoint = $cmdOptions;
         }
@@ -360,7 +382,11 @@ class HoneywellManager {
                 if($mode == 'scheduled'){
                     $this->SetTemperatureToScheduleMode($honeywellDeviceId);
                 } else {
-                    $this->SetTemperaturePermanent($honeywellDeviceId, $heatSetpoint);
+                    if($mode == 'permanent'){
+                        $this->SetTemperaturePermanent($honeywellDeviceId, $heatSetpoint);
+                    } else {
+                        $this->SetTemperatureUntil($honeywellDeviceId, $heatSetpoint, $until);
+                    }
                 }
                 break;
             
