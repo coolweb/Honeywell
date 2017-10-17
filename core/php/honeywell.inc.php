@@ -31,6 +31,7 @@ require_once dirname(__FILE__) . '/../class/jeedomLocation.class.php';
 
 require_once dirname(__FILE__) . '/../class/jeedomHelper.class.php';
 require_once dirname(__FILE__) . '/../class/honeywellProxy.class.php';
+require_once dirname(__FILE__) . '/../class/honeywellProxyV1.class.php';
 
 require_once dirname(__FILE__) . '/../class/userSessionManager.class.php';
 require_once dirname(__FILE__) . '/../class/honeywellManager.class.php';

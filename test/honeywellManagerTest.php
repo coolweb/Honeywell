@@ -24,7 +24,7 @@ class HoneywellManagerTest extends TestCase{
         ->disableOriginalConstructor()
         ->getMock();
 
-        $this->honeylwellProxy = $this->getMockBuilder(HoneywellProxy::class)
+        $this->honeylwellProxy = $this->getMockBuilder(HoneywellProxyV1::class)
         ->setMethods([
         'RetrieveLocations'])
         ->disableOriginalConstructor()
@@ -90,22 +90,22 @@ class HoneywellManagerTest extends TestCase{
     public function testWhenRetrieveLocationsAndOneValve_ItShouldReturnLocationsWithValve()
     {
         $loc1 = new Location();
-        $loc1->name = 'house';
-        $loc1->locationID = '123';
-        $valve1 = new Device();
+        $loc1->locationInfo->name = 'house';
+        $loc1->locationInfo->locationId = '123';
+        $valve1 = new Zone();
         $valve1->name = 'kitchen';
-        $valve1->deviceID = 666;
-        $valve1->deviceType = 128;
-        $valve1->thermostat = new Thermostat();
-        $valve1->thermostat->indoorTemperature = 12.2;
-        $valve1->thermostat->changeableValues = new stdClass();
-        @$valve1->thermostat->changeableValues->heatSetpoint = new stdClass();
-        @$valve1->thermostat->changeableValues->heatSetpoint->value = 15;
+        $valve1->zoneId = 666;
+        $valve1->modelType = 'HeatingZone';
+        $temperatureSys = new TemperatureControlSystem();
+        $gateway = new Gateway();
 
-        array_push($loc1->devices, $valve1);
-        $otherDevice = new Device();
-        $otherDevice->deviceType = 1;
-        array_push($loc1->devices, $otherDevice);
+        array_push($loc1->gateways, $gateway);
+        array_push($gateway->temperatureControlSystems, $temperatureSys);
+        array_push($temperatureSys->zones, $valve1);
+
+        $otherDevice = new Zone();
+        $otherDevice->modelType = 'unknow';
+        array_push($temperatureSys->zones, $otherDevice);
 
         $locations = array($loc1);
 

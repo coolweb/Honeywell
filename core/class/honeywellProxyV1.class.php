@@ -18,10 +18,12 @@
 
 /* * ***************************Includes********************************* */
 
-class HoneywellProxy
+class HoneywellProxyV1
 {
-    private $honeywellApiUrl = 'https://tccna.honeywell.com/WebAPI/api';
-    private $appId = '91db1612-73fd-4500-91b2-e63b069b185c';
+    private $honeywellAuthUrl = 'https://tccna.honeywell.com/Auth/OAuth/Token';
+    private $honeywellApiUrl = 'https://tccna.honeywell.com/WebAPI/emea/api/v1';
+    private $appId = 'b013aa26-9724-4dbd-8897-048b9aada249';
+    private $sessionId = null;
     
     /** @var JeedomHelper */
     private $jeedomHelper;
@@ -36,43 +38,51 @@ class HoneywellProxy
     * @param $requestUrl string The request url to call
     * @return Array, index 0 is the http code, index 1 is the returned data.
     */
-    public function doJsonCall($requestUrl, $data, $method = 'POST', $headers = 'Content-Type: application/json')
+    public function doJsonCall($requestUrl, $data, $method = 'POST', $headers = null)
     {
+        if(is_null($headers)){
+            if(!empty($this->sessionId)){
+                $headers = ['Authorization: bearer ' . $this->sessionId,
+                'applicationId: ' . $this->appId,
+                'Accept: application/json, application/xml, text/json, text/x-json, text/javascript, text/xml'];
+            }
+        }
+        
         $result = array(null, null);
         $this->jeedomHelper->logDebug('Do http call ' . $method . ' ' . $requestUrl);
         
         $options = array(
-            'http' => array(
-            'header'  => $headers,
-            'method'  => $method,
-            'content' => $data,
-            'ignore_errors' => true,
-            'follow_location' => 0
+        'http' => array(
+        'header'  => $headers,
+        'method'  => $method,
+        'content' => $data,
+        'ignore_errors' => true,
+        'follow_location' => 0
         ),
-            'ssl'=>array(
-            'verify_peer'=>false,
-            'verify_peer_name'=>false,
+        'ssl'=>array(
+        'verify_peer'=>false,
+        'verify_peer_name'=>false,
         )
         );
-       
+        
         $context  = stream_context_create($options);
         $this->jeedomHelper->logDebug('with data: ' . print_r($options, true));
         
-        try {            
+        try {
             $json = file_get_contents($requestUrl, false, $context);
             if (isset($http_response_header) && array_key_exists(0, $http_response_header)) {
                 $matches = array();
                 preg_match('#HTTP/\d+\.\d+ (\d+)#', $http_response_header[0], $matches);
                 $result[0] = $matches[1];
             }
-
+            
             if(is_string($json))
             {
                 $this->jeedomHelper->logDebug('Status:' . $result[0] . ' Result: ' . $json);
             } else {
                 $this->jeedomHelper->logDebug('Http call result ' . $result[0]);
             }
-
+            
             $jsonObj = json_decode($json);
             $result[1] = $jsonObj;
             
@@ -89,6 +99,14 @@ class HoneywellProxy
         }
     }
     
+    public function RetrieveUser(){
+        $userUrl = $this->honeywellApiUrl . '/userAccount';
+        
+        $result = $this->doJsonCall($userUrl, null, 'GET');
+
+        return $result[1];
+    }
+    
     /**
     * Do a logon to the honeywell api and retrieve the token for futher calls.
     * @param userName The user name to do the logon
@@ -97,17 +115,31 @@ class HoneywellProxy
     */
     public function OpenSession($userName, $password)
     {
-        $sessionUrl = $this->honeywellApiUrl . '/Session';
+        $sessionUrl = $this->honeywellAuthUrl;
         
         $sessionRequest = new StdClass();
-        @$sessionRequest->username = $userName;
-        @$sessionRequest->password = $password;
-        @$sessionRequest->applicationId = $this->appId;
+        @$sessionRequest->Username = $userName;
+        @$sessionRequest->Password = $password;
+        @$sessionRequest->Connection = 'Keep-Alive';
+        @$sessionRequest->scope = 'EMEA-V1-Basic EMEA-V1-Anonymous EMEA-V1-Get-Current-User-Account';
+        @$sessionRequest->{'grant_type'} = 'password';
+        @$sessionRequest->Pragma = 'no-cache';
+        @$sessionRequest->{'Cache-Control'} = 'no-store no-cache';
+        @$sessionReques->{'Content-Type'} = 'application/x-www-form-urlencoded; charset=utf-8';
+        @$sessionRequest->Host = 'rs.alarmnet.com/';
         
-        $result = $this->doJsonCall($sessionUrl, json_encode($sessionRequest));
+        $query = http_build_query($sessionRequest);
+        
+        $header = ['Authorization: Basic YjAxM2FhMjYtOTcyNC00ZGJkLTg4OTctMDQ4YjlhYWRhMjQ5OnRlc3Q=',
+        'Accept: application/json, application/xml, text/json, text/x-json, text/javascript, text/xml',
+        'Content-Type: application/x-www-form-urlencoded; charset=utf-8',
+        'Content-Length: '.strlen($query)];
+        
+        $result = $this->doJsonCall($sessionUrl, $query, 'POST', $header);
         
         switch ($result[0]) {
             case '200':
+                $this->sessionId = $result[1]->access_token;
                 return $result[1];
                 
                 case '401':
@@ -124,9 +156,9 @@ class HoneywellProxy
             * @param userId The id of the user retrive after opening a session
             * @return array of Location
             */
-            public function RetrieveLocations($sessionId, $userId){
-                $locationsUrl = $this->honeywellApiUrl . '/locations?userId=' . $userId . '&allData=True';
-                $header = ['sessionId: '  . $sessionId];
+            public function RetrieveLocations($userId){
+                $locationsUrl = $this->honeywellApiUrl . 
+                '/location/installationInfo?userId=' . $userId . '&includeTemperatureControlSystems=true';
                 
                 $result = $this->doJsonCall($locationsUrl, null, 'GET', $header);
                 
@@ -146,12 +178,12 @@ class HoneywellProxy
                 $temperatureUrl = $this->honeywellApiUrl . '/devices/' .
                 $deviceId . '/thermostat/changeableValues/heatSetpoint';
                 $header = ['sessionId: ' . $sessionId ,
-                            'Content-Type: application/json'];
+                'Content-Type: application/json'];
                 
                 $data = new stdClass();
                 @$data->Value = $temperature;
                 @$data->Status = $status;
-
+                
                 if($nextTime !== null)
                 {
                     @$data->NextTime = date_format($nextTime, 'Y-m-d').'T'.date_format($nextTime, 'H:i:s').'Z';

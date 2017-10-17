@@ -1,8 +1,65 @@
 <?php
+class Zone{
+    /** @var number */
+    public $zoneId;
+    
+    /** @var string */
+    public $modelType;
+
+    /** @var string */
+    public $zoneType;
+
+    /** @var string */
+    public $name;
+}
+
+class TemperatureControlSystem{
+    /** @var number */
+    public $systemId;
+
+    /** @var string */
+    public $modelType;
+
+    /** @var Zone[] */
+    public $zones;    
+
+    public function __construct()
+    {
+        $this->zones = Array();
+    }
+}
+
+class Gateway{
+    /** @var TemperatureControlSystem[] */
+    public $temperatureControlSystems;
+
+    public function __construct()
+    {
+        $this->temperatureControlSystems = Array();
+    }
+}
 
 class Location{
+    /**
+     * @var LocationInfo
+     */
+    public $locationInfo;
+
+    /**
+     * @var Gateway[]
+     */
+    public $gateways;
+
+    public function __construct()
+    {
+        $this->locationInfo = new LocationInfo();
+        $this->gateways = Array();
+    }
+}
+
+class LocationInfo{
     /** @var int */
-    public $locationID;
+    public $locationId;
 
     /** @var string */
     public $name;
@@ -17,26 +74,8 @@ class Location{
     public $country;
 
     /** @var string */
-    public $zipcode;
+    public $postcode;
 
     /** @var string */
-    public $type;
-
-    /** @var bool */
-    public $hasStation;
-
-    /** @var bool */
-    public $daylightSavingTimeEnabled;
-
-    /** @var int */
-    public $locationOwnerID;
-
-    /** @var string */
-    public $locationOwnerName;
-
-    /** @var string */
-    public $locationOwnerUserName;
-
-    /** @var Device[] */
-    public $devices = array();
+    public $locationType;
 }

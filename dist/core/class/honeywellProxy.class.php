@@ -145,8 +145,6 @@ class HoneywellProxy
             public function ChangeTemperature($sessionId, $deviceId, $temperature, $status = 'Hold', $nextTime = null){
                 $temperatureUrl = $this->honeywellApiUrl . '/devices/' .
                 $deviceId . '/thermostat/changeableValues/heatSetpoint';
-                //$header =  'sessionId: ' . $sessionId . '\r\n' .
-                //            'Content-Type: application/json\r\n';
                 $header = ['sessionId: ' . $sessionId ,
                             'Content-Type: application/json'];
                 
@@ -179,11 +177,12 @@ class HoneywellProxy
             * @param date $nextTime To which time to set the quick action
             */
             public function SetLocationQuickAction($sessionId, $locationId, $action, $nextTime = null){
-                $quickActionUrl = $this->honeywellApiUrl . '/evoTouchSystems?locationId'
+                $quickActionUrl = $this->honeywellApiUrl . '/evoTouchSystems?locationId='
                 . $locationId;
-                $header = 'sessionId: ' . $sessionId . '\r\n';
+                $header = ['sessionId: ' . $sessionId ,
+                'Content-Type: application/json'];
                 
-                $data = new sdtClass();
+                $data = new stdClass();
                 @$data->QuickAction = $action;
                 @$data->QuickActionNextTime = $nextTime;
                 

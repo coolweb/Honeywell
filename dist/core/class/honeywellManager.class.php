@@ -1,7 +1,7 @@
 <?php
 
 class HoneywellManager {
-    /** @var HoneywellProxy */
+    /** @var HoneywellProxyV1 */
     private $honeywellProxy;
     
     /** @var UserSessionManager */
@@ -10,7 +10,7 @@ class HoneywellManager {
     /** @var JeedomHelper */
     private $jeedomHelper;
     
-    public function __construct(HoneywellProxy $honeywellProxy,UserSessionManager $userSessionManager, JeedomHelper $jeedomHelper)
+    public function __construct(HoneywellProxyV1 $honeywellProxy,UserSessionManager $userSessionManager, JeedomHelper $jeedomHelper)
     {
         $this->honeywellProxy = $honeywellProxy;
         $this->userSessionManager = $userSessionManager;
@@ -32,24 +32,28 @@ class HoneywellManager {
         
         $userId = $this->userSessionManager->RetrieveUserIdInConfiguration();
         
-        $locations = $this->honeywellProxy->RetrieveLocations($sessionId, $userId);
+        $locations = $this->honeywellProxy->RetrieveLocations($userId);
         $result = array();
         foreach ($locations as $location) {
             /** @var $location Location */
             $jeedomLoc = new JeedomLocation();
-            $jeedomLoc->name = $location->name;
-            $jeedomLoc->honeywellId = $location->locationID;
-            
-            foreach ($location->devices as $device) {
-                if($device->deviceType == 128){
-                    $valve = new JeedomThermostaticValve();
-                    
-                    $valve->honeywellId = $device->deviceID;
-                    $valve->name = $device->name . ' (' . $jeedomLoc->name . ')';
-                    $valve->indoorTemperature = $device->thermostat->indoorTemperature;
-                    $valve->wantedTemperature = $device->thermostat->changeableValues->heatSetpoint->value;
-                    
-                    array_push($jeedomLoc->valves, $valve);
+            $jeedomLoc->name = $location->locationInfo->name;
+            $jeedomLoc->honeywellId = $location->locationInfo->locationId;
+
+            foreach ($location->gateways as $gateway) {
+                foreach ($gateway->temperatureControlSystems as $temperatureSys) {
+                    foreach($temperatureSys->zones as $zone){
+                        if($zone->modelType == 'HeatingZone'){
+                            $valve = new JeedomThermostaticValve();
+                            
+                            $valve->honeywellId = $zone->zoneId;
+                            $valve->name = $zone->name . ' (' . $jeedomLoc->name . ')';
+                            //$valve->indoorTemperature = $device->thermostat->indoorTemperature;
+                            //$valve->wantedTemperature = $device->thermostat->changeableValues->heatSetpoint->value;
+                            
+                            array_push($jeedomLoc->valves, $valve);
+                        }
+                    }                    
                 }
             }
             
@@ -413,6 +417,7 @@ class HoneywellManager {
             case 'HeatingOff':
             case 'Custom':
                 $this->SetQuickAction($honeywellDeviceId, $cmdName);
+                break;
 
             default:
                 $this->jeedomHelper->logWarning('Unknown command name to execute :'

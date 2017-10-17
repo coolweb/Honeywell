@@ -4,14 +4,14 @@ class UserSessionManager{
     /** @var JeedomHelper */
     private $jeedomHelper;
 
-    /** @var HoneywellProxy */
+    /** @var HoneywellProxyV1 */
     private $honeywellProxy;
 
     /**
      * @param JeedomHelper $jeedomHelper The jeedom helper class
-     * @param HoneywellProxy $honeywellProxy The proxy class for honeywell api
+     * @param HoneywellProxyV1 $honeywellProxy The proxy class for honeywell api
      */
-    public function __construct(JeedomHelper $jeedomHelper, HoneywellProxy $honeywellProxy)
+    public function __construct(JeedomHelper $jeedomHelper, HoneywellProxyV1 $honeywellProxy)
     {
         $this->jeedomHelper = $jeedomHelper;
         $this->honeywellProxy = $honeywellProxy;
@@ -35,13 +35,17 @@ class UserSessionManager{
         }
 
         $sessionResponse = $this->honeywellProxy->OpenSession($user, $password);
+        $token = $sessionResponse->access_token;
+        if(is_string($token)){
+            $userInfo = $this->honeywellProxy->RetrieveUser($token);
 
-        if($userId !== $sessionResponse->userInfo->userID){
-            $this->jeedomHelper->logDebug('New user id stored');
-            $this->jeedomHelper->SavePluginConfiguration('userId', $sessionResponse->userInfo->userID);
+            if($userInfo->userId !== $userId){
+                $this->jeedomHelper->logDebug('New user id stored: ' . $userInfo->userId);
+                $this->jeedomHelper->SavePluginConfiguration('userId', $userInfo->userId);
+            }
         }
         
-        return $sessionResponse->sessionId;
+        return $sessionResponse->access_token;
     } 
 
     /**
