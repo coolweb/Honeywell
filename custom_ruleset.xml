@@ -1,0 +1,14 @@
+<!--
+    Another useful example of changing sniff settings is
+    to specify the end of line character that your standard
+    should check for.
+-->
+<ruleset name="Custom Standard">
+  <rule ref="PSR2"/>  
+
+  <rule ref="Generic.Files.LineEndings">
+    <properties>
+      <property name="eolChar" value="\r\n"/>
+    </properties>
+  </rule>
+</ruleset>

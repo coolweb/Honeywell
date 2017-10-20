@@ -1,16 +1,18 @@
 <?php
 use PHPUnit\Framework\TestCase;
+use coolweb\honeywell as honeywell;
+use coolweb\honeywell\apiContract;
 
 include_once('test.inc.php');
 
-class HoneywellTest extends TestCase
+class HoneywellProxyTest extends TestCase
 {
     /** @var JeedomHelper */
     private $jeedomHelper;
 
     protected function setUp()
     {
-        $this->jeedomHelper = $this->getMockBuilder(JeedomHelper::class)
+        $this->jeedomHelper = $this->getMockBuilder(\coolweb\honeywell\JeedomHelper::class)
         ->setMethods([
         'logDebug',
         'logWarning',
@@ -23,24 +25,24 @@ class HoneywellTest extends TestCase
 
     public function testWhenLogonOk_ItShouldReturnTheResponseData()
     {
-        $target = $this->getMockBuilder(HoneywellProxy::class)
+        $target = $this->getMockBuilder(\coolweb\honeywell\HoneywellProxyV1::class)
         ->setMethods([        
         'doJsonCall'])
         ->setConstructorArgs(array($this->jeedomHelper))
         ->getMock();
 
         $responseData = new stdClass();
+        @$responseData->access_token = "123";
 
         $target->method('doJsonCall')
         ->willReturn(array('200', $responseData));
-
         $result = $target->OpenSession('xxx', '1234');
         $this->assertEquals($responseData, $result);
     }
 
     public function testWhenBadUserPasswordOk_ItShouldReturnNull()
     {
-        $target = $this->getMockBuilder(HoneywellProxy::class)
+        $target = $this->getMockBuilder(\coolweb\honeywell\HoneywellProxyV1::class)
         ->setMethods([        
         'doJsonCall'])
         ->setConstructorArgs(array($this->jeedomHelper))
@@ -55,7 +57,7 @@ class HoneywellTest extends TestCase
 
     public function testWhenUnwantedHttpCode_ItShouldThrowException()
     {
-        $target = $this->getMockBuilder(HoneywellProxy::class)
+        $target = $this->getMockBuilder(\coolweb\honeywell\HoneywellProxyV1::class)
         ->setMethods([        
         'doJsonCall'])
         ->setConstructorArgs(array($this->jeedomHelper))

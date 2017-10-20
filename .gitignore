@@ -3,3 +3,6 @@ test.php
 core/config/common.config.php
 plugins
 sftp-config.json
+vendor/*
+dist/*
+node_modules/*

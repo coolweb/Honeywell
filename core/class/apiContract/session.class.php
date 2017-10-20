@@ -1,9 +1,11 @@
 <?php
+namespace coolweb\honeywell\apiContract;
 
-class Session{
+class Session
+{
     /** @var string */
-    public $sessionId;    
-
+    public $sessionId;
+    
     /** @var UserInfo */
     public $userInfo;
 }

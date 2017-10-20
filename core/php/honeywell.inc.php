@@ -25,6 +25,10 @@ require_once dirname(__FILE__) . '/../class/apiContract/device.class.php';
 require_once dirname(__FILE__) . '/../class/apiContract/location.class.php';
 require_once dirname(__FILE__) . '/../class/apiContract/session.class.php';
 require_once dirname(__FILE__) . '/../class/apiContract/userInfo.class.php';
+require_once dirname(__FILE__) . '/../class/apiContract/locationInfo.class.php';
+require_once dirname(__FILE__) . '/../class/apiContract/gateway.class.php';
+require_once dirname(__FILE__) . '/../class/apiContract/temperatureControlSystem.class.php';
+require_once dirname(__FILE__) . '/../class/apiContract/zone.class.php';
 
 require_once dirname(__FILE__) . '/../class/jeedomThermostaticValve.class.php';
 require_once dirname(__FILE__) . '/../class/jeedomLocation.class.php';

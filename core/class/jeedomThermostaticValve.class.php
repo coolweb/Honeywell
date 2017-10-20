@@ -1,6 +1,8 @@
 <?php
+namespace coolweb\honeywell;
 
-class JeedomThermostaticValve{
+class JeedomThermostaticValve
+{
     /** @var string */
     public $name;
 

@@ -1,5 +1,10 @@
 <?php
 use PHPUnit\Framework\TestCase;
+use coolweb\honeywell\HoneywellManager;
+use coolweb\honeywell\HoneywellProxyV1;
+use coolweb\honeywell\userSessionManager;
+use coolweb\honeywell\jeedomHelper;
+use coolweb\honeywell\apiContract;
 
 include_once('test.inc.php');
 
@@ -87,7 +92,7 @@ class HoneywellManagerTest extends TestCase{
         $this->assertNull($result);
     }
 
-    public function testWhenRetrieveLocationsAndOneValve_ItShouldReturnLocationsWithValve()
+    public function testWhenRetrieveLocationsAndOneValve_ItShouldReturnLocationsWithValveAndSaveLocationId()
     {
         $loc1 = new Location();
         $loc1->locationInfo->name = 'house';
@@ -111,6 +116,11 @@ class HoneywellManagerTest extends TestCase{
 
         $this->SetSessionId('1234');
         $this->SetLocations($locations);
+
+        $this->jeedomHelper
+        ->expects($this->once())
+        ->method('SavePluginConfiguration')
+        ->with($this->equalTo('locationId'), $this->equalTo('123'));
 
         $result = $this->target->RetrieveLocations();
         

@@ -1,7 +1,10 @@
 <?php
+namespace coolweb\honeywell;
 
-class JeedomHelper{
-    public function LoadPluginConfiguration($key){
+class JeedomHelper
+{
+    public function LoadPluginConfiguration($key)
+    {
         return config::byKey($key, 'honeywell');
     }
     
@@ -10,7 +13,8 @@ class JeedomHelper{
     * @param string $key The name of the configuration to save
     * @param string $value The value of the configuration
     */
-    public function SavePluginConfiguration($key, $value){
+    public function SavePluginConfiguration($key, $value)
+    {
         config::save($key, $value, 'honeywell');
     }
     
@@ -76,7 +80,8 @@ class JeedomHelper{
     * @param string[] $configurationKeyValue Key value pair of configuration values
     * @return eqLogic The created eqLogic
     */
-    public function CreateAndSaveEqLogic($logicalId, $name, $configurationKeyValue){
+    public function CreateAndSaveEqLogic($logicalId, $name, $configurationKeyValue)
+    {
         $eqLogic = new eqLogic();
         $eqLogic->setLogicalId($logicalId);
         $eqLogic->setEqType_name('honeywell');
@@ -113,27 +118,27 @@ class JeedomHelper{
         $cmdSubType,
         $showOnDashboard,
         $unite = '°C'
-        ){
-            $cmd = $eqLogic->getCmd(null, $cmdLogicalId);
-            if (!is_object($cmd)) {
-                $cmd = new honeywellCmd();
-                $cmd->setLogicalId($cmdLogicalId);
-                $cmd->setName($cmdName);
+        ) {
+        $cmd = $eqLogic->getCmd(null, $cmdLogicalId);
+        if (!is_object($cmd)) {
+            $cmd = new honeywellCmd();
+            $cmd->setLogicalId($cmdLogicalId);
+            $cmd->setName($cmdName);
 
-                if($cmdType == 'info')
-                {
-                    $cmd->setUnite($unite);
-                }
-
-                $cmd->setType($cmdType);
-                $cmd->setSubType($cmdSubType);
-                $cmd->setEqLogic_id($eqLogic->getId());
-                $cmd->setDisplay('showOndashboard', $showOnDashboard == true ? '1' : '0');
-                $cmd->save();
+            if ($cmdType == 'info') {
+                $cmd->setUnite($unite);
             }
-        }
 
-    public function ClearCacheAndUpdateWidget($eqLogic){
+            $cmd->setType($cmdType);
+            $cmd->setSubType($cmdSubType);
+            $cmd->setEqLogic_id($eqLogic->getId());
+            $cmd->setDisplay('showOndashboard', $showOnDashboard == true ? '1' : '0');
+            $cmd->save();
+        }
+    }
+
+    public function ClearCacheAndUpdateWidget($eqLogic)
+    {
         $mc = cache::byKey('honeywellWidgetmobile' . $eqLogic->getId());
         $mc->remove();
         $mc = cache::byKey('honeywellWidgetdashboard' . $eqLogic->getId());

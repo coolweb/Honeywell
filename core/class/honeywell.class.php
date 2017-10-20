@@ -21,7 +21,8 @@ if (file_exists(dirname(__FILE__) . '/../../../../core/php/core.inc.php')) {
     require_once dirname(__FILE__) . '/../php/honeywell.inc.php';
 }
 
-class honeywell extends eqLogic {
+class honeywell extends eqLogic
+{
     /*     * *************************Attributs****************************** */
     
     
@@ -31,7 +32,8 @@ class honeywell extends eqLogic {
     /*
     * Fonction exécutée automatiquement toutes les minutes par Jeedom
     */
-    public static function cron() {
+    public static function cron()
+    {
         $container = DI\ContainerBuilder::buildDevContainer();
         
         /**
@@ -41,9 +43,10 @@ class honeywell extends eqLogic {
         $honeywellManager = $container->get('HoneywellManager');
         
         $jeedomHelper->logDebug('Cron start, retrieve locations');
+        // todo: load zones with other method from postman, locationId is stored in plugin configuration
         $locations = $honeywellManager->RetrieveLocations();
             
-        if($locations == null){
+        if ($locations == null) {
             $jeedomHelper->logError('Honeywell plugin class - cron, unable to get locations, ' .
             'check user and password account');
         }
@@ -53,12 +56,21 @@ class honeywell extends eqLogic {
         foreach ($eqLogics as $eqLogic) {
             foreach ($locations as $location) {
                 foreach ($location->valves as $valve) {
-                    if($eqLogic->getLogicalId() == $valve->honeywellId){
+                    if ($eqLogic->getLogicalId() == $valve->honeywellId) {
                         $jeedomHelper->logDebug('Found valve ' . $valve->name . ' into jeedom, update values...');
                         $changed = false;
                         
-                        $changed = $eqLogic->checkAndUpdateCmd('temperature', $valve->indoorTemperature) || $changed;
-                        $changed = $eqLogic->checkAndUpdateCmd('wantedTemperature', $valve->wantedTemperature) || $changed;
+                        $changed = $eqLogic->checkAndUpdateCmd(
+                            'temperature',
+                            $valve->indoorTemperature
+                        )
+                            || $changed;
+                            
+                        $changed = $eqLogic->checkAndUpdateCmd(
+                            'wantedTemperature',
+                            $valve->wantedTemperature
+                        )
+                            || $changed;
                         
                         if ($changed) {
                             $jeedomHelper->ClearCacheAndUpdateWidget($eqLogic);
@@ -74,14 +86,14 @@ class honeywell extends eqLogic {
     /*
     * Fonction exécutée automatiquement toutes les heures par Jeedom
     public static function cronHourly() {
-    
+
     }
     */
     
     /*
     * Fonction exécutée automatiquement tous les jours par Jeedom
     public static function cronDayly() {
-    
+
     }
     */
     
@@ -89,49 +101,50 @@ class honeywell extends eqLogic {
     
     /*     * *********************Méthodes d'instance************************* */
     
-    public function preInsert() {
-        
+    public function preInsert()
+    {
     }
     
-    public function postInsert() {
-        
+    public function postInsert()
+    {
     }
     
-    public function preSave() {
-        
+    public function preSave()
+    {
     }
     
-    public function postSave() {
-        
+    public function postSave()
+    {
     }
     
-    public function preUpdate() {
-        
+    public function preUpdate()
+    {
     }
     
-    public function postUpdate() {
-        
+    public function postUpdate()
+    {
     }
     
-    public function preRemove() {
-        
+    public function preRemove()
+    {
     }
     
-    public function postRemove() {
-        
+    public function postRemove()
+    {
     }
     
-    public function toHtml($_version = 'dashboard') {
-        $replace = $this->preToHtml($_version); 
+    public function toHtml($_version = 'dashboard')
+    {
+        $replace = $this->preToHtml($_version);
         $version = jeedom::versionAlias($_version);
-        if (!is_array($replace)) {            
+        if (!is_array($replace)) {
             return $replace;
         }
         
         $deviceType = $this->getConfiguration('deviceType');
         
         // valve
-        if($deviceType == '128'){
+        if ($deviceType == '128') {
             $temperature = $this->getCmd(null, 'Temperature');
             $replace['#temperature#'] = is_object($temperature) ? $temperature->execCmd() : '';
             
@@ -145,7 +158,7 @@ class honeywell extends eqLogic {
         }
 
         // thermostat tablet evohome
-        if($deviceType == '0'){
+        if ($deviceType == '0') {
             $autoCmd = $this->getCmd(null, 'Auto');
             $replace['#autoCmdId'] = is_object($autoCmd) ? $autoCmd->getId() : '';
 
@@ -179,7 +192,7 @@ class honeywell extends eqLogic {
         $jeedomHelper->logInfo('Getting devices from honeywell');
         $locations = $honeywellManager->RetrieveLocations();
         
-        if($locations == null){
+        if ($locations == null) {
             throw new Exception('Vérifiez que vous avez mis le bon nom' .
             'd\'utilisateur et mot de passe');
         }
@@ -190,27 +203,28 @@ class honeywell extends eqLogic {
         
         foreach ($locations as $location) {
             foreach ($eqLogics as $eqLogic) {
-                if($eqLogic->getLogicalId() == $location->honeywellId){
+                if ($eqLogic->getLogicalId() == $location->honeywellId) {
                     break;
+                }
+            }
+            $honeywellManager->createCommandsForLocation($eqLogic, $location);
+        
+            foreach ($location->valves as $valve) {
+                foreach ($eqLogics as $eqLogic) {
+                    if ($eqLogic->getLogicalId() == $valve->honeywellId) {
+                        break;
+                    }
+                }
+        
+                $honeywellManager->CreateCommandForValve($eqLogic, $valve);
             }
         }
-        $honeywellManager->createCommandsForLocation($eqLogic, $location);
-        
-        foreach ($location->valves as $valve) {
-            foreach ($eqLogics as $eqLogic) {
-                if($eqLogic->getLogicalId() == $valve->honeywellId){
-                    break;
-            }
-        }
-        
-        $honeywellManager->CreateCommandForValve($eqLogic, $valve);
     }
-}
-}
-/*     * **********************Getteur Setteur*************************** */
+    /*     * **********************Getteur Setteur*************************** */
 }
 
-class honeywellCmd extends cmd {
+class honeywellCmd extends cmd
+{
     /*     * *************************Attributs****************************** */
     
     
@@ -220,13 +234,15 @@ class honeywellCmd extends cmd {
     /*     * *********************Methode d'instance************************* */
     
     /*
-    * Non obligatoire permet de demander de ne pas supprimer les commandes même si elles ne sont pas dans la nouvelle configuration de l'équipement envoyé en JS
+    * Non obligatoire permet de demander de ne pas supprimer
+    les commandes même si elles ne sont pas dans la nouvelle configuration de l'équipement envoyé en JS
     public function dontRemoveCmd() {
     return true;
     }
     */
     
-    public function execute($_options = array()) {
+    public function execute($_options = array())
+    {
         $container = DI\ContainerBuilder::buildDevContainer();
         
         $jeedomHelper = $container->get('JeedomHelper');
@@ -246,5 +262,3 @@ class honeywellCmd extends cmd {
     
     /*     * **********************Getteur Setteur*************************** */
 }
-
-?>

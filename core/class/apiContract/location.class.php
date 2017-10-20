@@ -1,81 +1,21 @@
-<?php
-class Zone{
-    /** @var number */
-    public $zoneId;
-    
-    /** @var string */
-    public $modelType;
+<?php 
+namespace coolweb\honeywell\apiContract;
 
-    /** @var string */
-    public $zoneType;
-
-    /** @var string */
-    public $name;
-}
-
-class TemperatureControlSystem{
-    /** @var number */
-    public $systemId;
-
-    /** @var string */
-    public $modelType;
-
-    /** @var Zone[] */
-    public $zones;    
-
-    public function __construct()
-    {
-        $this->zones = Array();
-    }
-}
-
-class Gateway{
-    /** @var TemperatureControlSystem[] */
-    public $temperatureControlSystems;
-
-    public function __construct()
-    {
-        $this->temperatureControlSystems = Array();
-    }
-}
-
-class Location{
+class Location
+{
     /**
-     * @var LocationInfo
-     */
+    * @var LocationInfo
+    */
     public $locationInfo;
-
+    
     /**
-     * @var Gateway[]
-     */
+    * @var Gateway[]
+    */
     public $gateways;
-
+    
     public function __construct()
     {
         $this->locationInfo = new LocationInfo();
-        $this->gateways = Array();
+        $this->gateways = array();
     }
-}
-
-class LocationInfo{
-    /** @var int */
-    public $locationId;
-
-    /** @var string */
-    public $name;
-
-    /** @var string */
-    public $streetAddress;
-
-    /** @var string */
-    public $city;
-
-    /** @var string */
-    public $country;
-
-    /** @var string */
-    public $postcode;
-
-    /** @var string */
-    public $locationType;
 }

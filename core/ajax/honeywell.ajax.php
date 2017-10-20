@@ -1,5 +1,5 @@
 <?php
-ini_set('display_errors', 1);
+//ini_set('display_errors', 1);
 
 /* This file is part of Jeedom.
 *
@@ -27,15 +27,12 @@ try {
         throw new Exception(__('401 - Accès non autorisé', __FILE__));
     }
     
-    //log::add('honeywell', 'debug', 'Ajax call honeywell action:' . init('action'));
-    
     ajax::init();
     if (init('action') == 'syncDevices') {
-    
         $honeywell = new honeywell();
-    
+        
         $result = $honeywell->SyncDevices();
-        if($result == ''){
+        if ($result == '') {
             ajax::success();
         } else {
             log::add('honeywell', 'debug', 'Ajax error:' . $result);
@@ -43,9 +40,12 @@ try {
         }
     }
     
-    throw new Exception(__('Aucune méthode correspondante à : ', __FILE__) . init('action'));
+    throw new Exception(
+        __('Aucune méthode correspondante à : ', __FILE__)
+        . init('action')
+    );
+    
     /*     * *********Catch exeption*************** */
 } catch (Exception $e) {
-    ajax::error(displayExeption($e), $e->getCode());    
+    ajax::error(displayExeption($e), $e->getCode());
 }
-?>

@@ -1,4 +1,5 @@
 <?php
+namespace coolweb\honeywell;
 
 /* This file is part of Jeedom.
 *
@@ -40,8 +41,8 @@ class HoneywellProxyV1
     */
     public function doJsonCall($requestUrl, $data, $method = 'POST', $headers = null)
     {
-        if(is_null($headers)){
-            if(!empty($this->sessionId)){
+        if (is_null($headers)) {
+            if (!empty($this->sessionId)) {
                 $headers = ['Authorization: bearer ' . $this->sessionId,
                 'applicationId: ' . $this->appId,
                 'Accept: application/json, application/xml, text/json, text/x-json, text/javascript, text/xml'];
@@ -76,8 +77,7 @@ class HoneywellProxyV1
                 $result[0] = $matches[1];
             }
             
-            if(is_string($json))
-            {
+            if (is_string($json)) {
                 $this->jeedomHelper->logDebug('Status:' . $result[0] . ' Result: ' . $json);
             } else {
                 $this->jeedomHelper->logDebug('Http call result ' . $result[0]);
@@ -87,7 +87,7 @@ class HoneywellProxyV1
             $result[1] = $jsonObj;
             
             return $result;
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             if (isset($http_response_header) && array_key_exists(0, $http_response_header)) {
                 $matches = array();
                 preg_match('#HTTP/\d+\.\d+ (\d+)#', $http_response_header[0], $matches);
@@ -99,7 +99,8 @@ class HoneywellProxyV1
         }
     }
     
-    public function RetrieveUser(){
+    public function RetrieveUser()
+    {
         $userUrl = $this->honeywellApiUrl . '/userAccount';
         
         $result = $this->doJsonCall($userUrl, null, 'GET');
@@ -117,7 +118,7 @@ class HoneywellProxyV1
     {
         $sessionUrl = $this->honeywellAuthUrl;
         
-        $sessionRequest = new StdClass();
+        $sessionRequest = new \StdClass();
         @$sessionRequest->Username = $userName;
         @$sessionRequest->Password = $password;
         @$sessionRequest->Connection = 'Keep-Alive';
@@ -146,78 +147,95 @@ class HoneywellProxyV1
                     return null;
                     
                     default:
-                        throw new Exception('Unexpected http code while doing logon: ' . $result[0]);
+                        throw new \Exception('Unexpected http code while doing logon: ' . $result[0]);
                 }
-            }
+    }
             
-            /**
-            * Retrieve locations with devices attached to it
-            * @param sessionId The session id
-            * @param userId The id of the user retrive after opening a session
-            * @return array of Location
-            */
-            public function RetrieveLocations($userId){
-                $locationsUrl = $this->honeywellApiUrl . 
+    /**
+    * Retrieve locations with devices attached to it
+    * @param sessionId The session id
+    * @param userId The id of the user retrive after opening a session
+    * @return array of Location
+    */
+    public function RetrieveLocations($userId)
+    {
+        $locationsUrl = $this->honeywellApiUrl .
                 '/location/installationInfo?userId=' . $userId . '&includeTemperatureControlSystems=true';
                 
-                $result = $this->doJsonCall($locationsUrl, null, 'GET', $header);
+        $result = $this->doJsonCall($locationsUrl, null, 'GET');
                 
-                return $result[1];
-            }
+        return $result[1];
+    }
+
+    /**
+     * Retrieve all zones for a location
+     *
+     * @param [string] $locationId The identifier of the location
+     * @return Array of zones
+     */
+    public function RetrieveZones($locationId)
+    {
+        $zoneUrl = $this->honeywellApiUrl . "/temperatureZone/status?locationId=" . $locationId;
+
+        $result = $this->doJsonCall($zoneUrl, null, "GET");
+                
+        return $result[1];
+    }
             
-            /**
-            * Change temperature for a valve
-            *
-            * @param string $sessionId The id of the session
-            * @param number $deviceId The id of the valve
-            * @param number $temperature The temperature to set
-            * @param string $status Hold | Temporary | Scheduled
-            * @param date $nextTime To which time to change the temperature
-            */
-            public function ChangeTemperature($sessionId, $deviceId, $temperature, $status = 'Hold', $nextTime = null){
-                $temperatureUrl = $this->honeywellApiUrl . '/devices/' .
+    /**
+    * Change temperature for a valve
+    *
+    * @param string $sessionId The id of the session
+    * @param number $deviceId The id of the valve
+    * @param number $temperature The temperature to set
+    * @param string $status Hold | Temporary | Scheduled
+    * @param date $nextTime To which time to change the temperature
+    */
+    public function ChangeTemperature($sessionId, $deviceId, $temperature, $status = 'Hold', $nextTime = null)
+    {
+        $temperatureUrl = $this->honeywellApiUrl . '/devices/' .
                 $deviceId . '/thermostat/changeableValues/heatSetpoint';
-                $header = ['sessionId: ' . $sessionId ,
+        $header = ['sessionId: ' . $sessionId ,
                 'Content-Type: application/json'];
                 
-                $data = new stdClass();
-                @$data->Value = $temperature;
-                @$data->Status = $status;
+        $data = new \stdClass();
+        @$data->Value = $temperature;
+        @$data->Status = $status;
                 
-                if($nextTime !== null)
-                {
-                    @$data->NextTime = date_format($nextTime, 'Y-m-d').'T'.date_format($nextTime, 'H:i:s').'Z';
-                } else {
-                    @$data->NextTime = null;
-                }
-                
-                $result = $this->doJsonCall($temperatureUrl, json_encode($data), 'PUT', $header);
-                if(is_string($result) === false){
-                    $this->jeedomHelper->logWarning('No task id retrieved change temperature no executed');
-                } else {
-                    $taskId = json_decode($result)->id;
-                    $this->jeedomHelper->logDebug('Task id received:' . $taskId);
-                }
-            }
-            
-            /**
-            * Set a location quick action
-            *
-            * @param string $sessionId The id of the session
-            * @param string $locationId The id of the location where to set the quick action
-            * @param string $action The quick action, values: Auto - Custom - AutoWithEco - Away - DayOff - HeatingOff
-            * @param date $nextTime To which time to set the quick action
-            */
-            public function SetLocationQuickAction($sessionId, $locationId, $action, $nextTime = null){
-                $quickActionUrl = $this->honeywellApiUrl . '/evoTouchSystems?locationId='
-                . $locationId;
-                $header = ['sessionId: ' . $sessionId ,
-                'Content-Type: application/json'];
-                
-                $data = new stdClass();
-                @$data->QuickAction = $action;
-                @$data->QuickActionNextTime = $nextTime;
-                
-                $this->doJsonCall($quickActionUrl, json_encode($data), 'PUT', $header);
-            }
+        if ($nextTime !== null) {
+            @$data->NextTime = date_format($nextTime, 'Y-m-d').'T'.date_format($nextTime, 'H:i:s').'Z';
+        } else {
+            @$data->NextTime = null;
         }
+                
+        $result = $this->doJsonCall($temperatureUrl, json_encode($data), 'PUT', $header);
+        if (is_string($result) === false) {
+            $this->jeedomHelper->logWarning('No task id retrieved change temperature no executed');
+        } else {
+            $taskId = json_decode($result)->id;
+            $this->jeedomHelper->logDebug('Task id received:' . $taskId);
+        }
+    }
+            
+    /**
+    * Set a location quick action
+    *
+    * @param string $sessionId The id of the session
+    * @param string $locationId The id of the location where to set the quick action
+    * @param string $action The quick action, values: Auto - Custom - AutoWithEco - Away - DayOff - HeatingOff
+    * @param date $nextTime To which time to set the quick action
+    */
+    public function SetLocationQuickAction($sessionId, $locationId, $action, $nextTime = null)
+    {
+        $quickActionUrl = $this->honeywellApiUrl . '/evoTouchSystems?locationId='
+                . $locationId;
+        $header = ['sessionId: ' . $sessionId ,
+                'Content-Type: application/json'];
+                
+        $data = new \stdClass();
+        @$data->QuickAction = $action;
+        @$data->QuickActionNextTime = $nextTime;
+                
+        $this->doJsonCall($quickActionUrl, json_encode($data), 'PUT', $header);
+    }
+}

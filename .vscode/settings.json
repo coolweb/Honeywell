@@ -1,4 +1,7 @@
 // Placez vos paramètres dans ce fichier pour remplacer les paramètres par défaut et les paramètres utilisateur.
 {
-    "composer.executablePath": "C:\\ProgramData\\ComposerSetup\\bin\\composer.bat"
+    "composer.executablePath": "C:\\ProgramData\\ComposerSetup\\bin\\composer.bat",
+    "phpformatter.arguments": [],
+    "phpformatter.pharPath": "D:\\Tools\\phpCsFixer\\php-cs-fixer-v2.phar",
+    "phpformatter.logging": true
 }

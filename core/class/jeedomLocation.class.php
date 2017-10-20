@@ -1,6 +1,8 @@
 <?php
+namespace coolweb\honeywell;
 
-class JeedomLocation{
+class JeedomLocation
+{
     /** @var JeedomThermostaticValve[] */
     public $valves = array();
 
