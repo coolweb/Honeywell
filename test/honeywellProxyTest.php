@@ -18,7 +18,7 @@ class HoneywellProxyTest extends TestCase
         'logWarning',
         'logInfo',
         'logError',
-        'LoadPluginConfiguration',
+        'loadPluginConfiguration',
         'SavePluginConfiguration'])
         ->getMock();
     }
@@ -36,7 +36,7 @@ class HoneywellProxyTest extends TestCase
 
         $target->method('doJsonCall')
         ->willReturn(array('200', $responseData));
-        $result = $target->OpenSession('xxx', '1234');
+        $result = $target->openSession('xxx', '1234');
         $this->assertEquals($responseData, $result);
     }
 
@@ -51,7 +51,7 @@ class HoneywellProxyTest extends TestCase
         $target->method('doJsonCall')
         ->willReturn(array('401'));
 
-        $result = $target->OpenSession('xxx', '1234');
+        $result = $target->openSession('xxx', '1234');
         $this->assertNull($result);
     }
 
@@ -67,7 +67,7 @@ class HoneywellProxyTest extends TestCase
         ->willReturn(array('503'));
 
         try {
-            $result = $target->OpenSession('xxx', '1234');
+            $result = $target->openSession('xxx', '1234');
         } catch (Exception $e) {
             $this->assertTrue(true);
             return;

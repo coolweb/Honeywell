@@ -31,11 +31,15 @@ module.exports = function (grunt) {
         },
         phpcs: {
             application: {
-                src: ['core/**/*.php', 'desktop/**/*.php']
+                src: [
+                    'core/**/*.php',
+                    '!core/class/honeywell.class.php',
+                    '!core/class/honeywellProxy.class.php'
+                ]
             },
             options: {
                 bin: 'vendor/bin/phpcs',
-                standard: './custom_ruleset.xml'
+                standard: 'PSR2'
             }
         }
     });

@@ -25,11 +25,11 @@ class UserSessionManager
      * @throws Exception If user or password are not in configuration
      * @return string The session Id, null if bad user/password
      */
-    public function RetrieveSessionId()
+    public function retrieveSessionId()
     {
-        $user = $this->jeedomHelper->LoadPluginConfiguration('username');
-        $password = $this->jeedomHelper->LoadPluginConfiguration('password');
-        $userId = $this->jeedomHelper->LoadPluginConfiguration('userId');
+        $user = $this->jeedomHelper->loadPluginConfiguration('username');
+        $password = $this->jeedomHelper->loadPluginConfiguration('password');
+        $userId = $this->jeedomHelper->loadPluginConfiguration('userId');
 
         if ($user == null || $password == null) {
             $message = 'User or password not found in configuration plugin';
@@ -37,14 +37,14 @@ class UserSessionManager
             throw new \Exception($message);
         }
 
-        $sessionResponse = $this->honeywellProxy->OpenSession($user, $password);
+        $sessionResponse = $this->honeywellProxy->openSession($user, $password);
         $token = $sessionResponse->access_token;
         if (is_string($token)) {
-            $userInfo = $this->honeywellProxy->RetrieveUser($token);
+            $userInfo = $this->honeywellProxy->retrieveUser($token);
 
             if ($userInfo->userId !== $userId) {
                 $this->jeedomHelper->logDebug('New user id stored: ' . $userInfo->userId);
-                $this->jeedomHelper->SavePluginConfiguration('userId', $userInfo->userId);
+                $this->jeedomHelper->savePluginConfiguration('userId', $userInfo->userId);
             }
         }
         
@@ -55,8 +55,8 @@ class UserSessionManager
      * Retrieve the user id stored in configuration
      * @return string The user id
      */
-    public function RetrieveUserIdInConfiguration()
+    public function retrieveUserIdInConfiguration()
     {
-        return $this->jeedomHelper->LoadPluginConfiguration('userId');
+        return $this->jeedomHelper->loadPluginConfiguration('userId');
     }
 }

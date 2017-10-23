@@ -24,14 +24,14 @@ class HoneywellManagerTest extends TestCase{
     protected function setUp(){
         $this->userSessionManager = $this->getMockBuilder(UserSessionManager::class)
         ->setMethods([
-        'RetrieveSessionId',
-        'RetrieveUserIdInConfiguration'])
+        'retrieveSessionId',
+        'retrieveUserIdInConfiguration'])
         ->disableOriginalConstructor()
         ->getMock();
 
         $this->honeylwellProxy = $this->getMockBuilder(HoneywellProxyV1::class)
         ->setMethods([
-        'RetrieveLocations'])
+        'retrieveLocations'])
         ->disableOriginalConstructor()
         ->getMock();
 
@@ -41,11 +41,11 @@ class HoneywellManagerTest extends TestCase{
         'logWarning',
         'logInfo',
         'logError',
-        'LoadPluginConfiguration',
-        'SavePluginConfiguration',
+        'loadPluginConfiguration',
+        'savePluginConfiguration',
         'getEqLogicByLogicalId',
-        'CreateAndSaveEqLogic',
-        'CreateCmd'])
+        'createAndSaveEqLogic',
+        'createCmd'])
         ->getMock();
 
         $this->target = new HoneywellManager(
@@ -56,14 +56,14 @@ class HoneywellManagerTest extends TestCase{
 
     private function SetSessionId($sessionId){
         $this->userSessionManager
-        ->method('RetrieveSessionId')
+        ->method('retrieveSessionId')
         ->willReturn($sessionId);        
     }
 
     private function SetLocations($locations)
     {
         $this->honeylwellProxy
-        ->method('RetrieveLocations')
+        ->method('retrieveLocations')
         ->willReturn($locations);
     }
 
@@ -82,7 +82,7 @@ class HoneywellManagerTest extends TestCase{
         }
     }
 
-    public function testWhenRetrieveLocationsAndRetrieveSessionIdReturnNull_ItShouldReturnNull()
+    public function testWhenRetrieveLocationsAndretrieveSessionIdReturnNull_ItShouldReturnNull()
     {
         $this->SetSessionId(null);
         $this->SetLocations(array());
@@ -119,16 +119,16 @@ class HoneywellManagerTest extends TestCase{
 
         $this->jeedomHelper
         ->expects($this->once())
-        ->method('SavePluginConfiguration')
+        ->method('savePluginConfiguration')
         ->with($this->equalTo('locationId'), $this->equalTo('123'));
 
-        $result = $this->target->RetrieveLocations();
+        $result = $this->target->retrieveLocations();
         
         $this->assertEquals(1, sizeof($result));
         $this->assertEquals(1, sizeof($result[0]->valves));
     }
 
-    public function testCreateEqLogicWhenDeviceExistsInJeedom_ItShouldDoNothing()
+    public function testcreateEqLogicWhenDeviceExistsInJeedom_ItShouldDoNothing()
     {
         $logicalId = '123';
         $logicalId2 = '456';
@@ -145,12 +145,12 @@ class HoneywellManagerTest extends TestCase{
 
         $this->jeedomHelper
         ->expects($this->never())
-        ->method('CreateAndSaveEqLogic');
+        ->method('createAndSaveEqLogic');
 
-        $this->target->CreateEqLogic($locations);        
+        $this->target->createEqLogic($locations);        
     }
 
-    public function testCreateEqLogicWhenDeviceNotExistsInJeedom_ItShouldCreateEqLogic()
+    public function testcreateEqLogicWhenDeviceNotExistsInJeedom_ItShouldcreateEqLogic()
     {
         $logicalId = '123';
         
@@ -164,21 +164,21 @@ class HoneywellManagerTest extends TestCase{
 
         $this->jeedomHelper
         ->expects($this->exactly(2))
-        ->method('CreateAndSaveEqLogic');
+        ->method('createAndSaveEqLogic');
 
-        $this->target->CreateEqLogic($locations);        
+        $this->target->createEqLogic($locations);        
     }
 
-    public function testCreateCommandForValve_ShouldCreateCommands(){
+    public function testcCreateCommandForValve_ShouldCreateCommands(){
         $eqLogic = new stdClass();
         $valve = new JeedomThermostaticValve();
         $valve->name = "test";
 
         $this->jeedomHelper
         ->expects($this->exactly(5))
-        ->method('CreateCmd');
+        ->method('createCmd');
 
-        $this->target->CreateCommandForValve($eqLogic, $valve);        
+        $this->target->cCreateCommandForValve($eqLogic, $valve);        
     }
 
     public function testCreateCommandsForLocation_ShouldCreateCommands(){
@@ -188,38 +188,38 @@ class HoneywellManagerTest extends TestCase{
 
         $this->jeedomHelper
         ->expects($this->exactly(6))
-        ->method('CreateCmd');
+        ->method('createCmd');
 
         $this->target->createCommandsForLocation($eqLogic, $location);
     }
 
-    public function testTemperatureUpWhen19_3ItShouldSet19_5(){
-        $result = $this->target->TemperatureUp("xxx", 19.3);
+    public function testtemperatureUpWhen19_3ItShouldSet19_5(){
+        $result = $this->target->temperatureUp("xxx", 19.3);
         $this->assertEquals(19.5, $result);
     }
 
-    public function testTemperatureUpWhen19_5ItShouldSet20(){
-        $result = $this->target->TemperatureUp("xxx", 19.5);
+    public function testtemperatureUpWhen19_5ItShouldSet20(){
+        $result = $this->target->temperatureUp("xxx", 19.5);
         $this->assertEquals(20, $result);
     }
 
-    public function testTemperatureUpWhen19_6ItShouldSet20(){
-        $result = $this->target->TemperatureUp("xxx", 19.6);
+    public function testtemperatureUpWhen19_6ItShouldSet20(){
+        $result = $this->target->temperatureUp("xxx", 19.6);
         $this->assertEquals(20, $result);
     }
 
-    public function testTemperatureDownWhen19_3ItShouldSet19(){
-        $result = $this->target->TemperatureDown("xxx", 19.3);
+    public function testtemperatureDownWhen19_3ItShouldSet19(){
+        $result = $this->target->temperatureDown("xxx", 19.3);
         $this->assertEquals(19, $result);
     }
 
-    public function testTemperatureDownWhen19_6ItShouldSet19_5(){
-        $result = $this->target->TemperatureDown("xxx", 19.6);
+    public function testtemperatureDownWhen19_6ItShouldSet19_5(){
+        $result = $this->target->temperatureDown("xxx", 19.6);
         $this->assertEquals(19.5, $result);
     }
 
-    public function testTemperatureDownWhen19_5ItShouldSet19(){
-        $result = $this->target->TemperatureDown("xxx", 19.5);
+    public function testtemperatureDownWhen19_5ItShouldSet19(){
+        $result = $this->target->temperatureDown("xxx", 19.5);
         $this->assertEquals(19, $result);
     }
 }

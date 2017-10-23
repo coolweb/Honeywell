@@ -1,4 +1,4 @@
-<?php 
+<?php
 namespace coolweb\honeywell\apiContract;
 
 class Location

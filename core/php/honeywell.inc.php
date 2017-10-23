@@ -43,7 +43,6 @@ require_once dirname(__FILE__) . '/../class/honeywellManager.class.php';
 /*
  * Non obligatoire mais peut être utilisé si vous voulez charger en même temps que votre
  * plugin des librairies externes (ne pas oublier d'adapter plugin_info/info.xml).
- * 
- * 
+ *
+ *
  */
-?>

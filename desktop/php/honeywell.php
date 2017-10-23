@@ -1,6 +1,6 @@
 <?php
 if (!isConnect('admin')) {
-	throw new Exception('{{401 - Accès non autorisé}}');
+    throw new Exception('{{401 - Accès non autorisé}}');
 }
 sendVarToJS('eqType', 'honeywell');
 $eqLogics = eqLogic::byType('honeywell');
@@ -14,7 +14,7 @@ $eqLogics = eqLogic::byType('honeywell');
                 <li class="filter" style="margin-bottom: 5px;"><input class="filter form-control input-sm" placeholder="{{Rechercher}}" style="width: 100%"/></li>
                 <?php
 foreach ($eqLogics as $eqLogic) {
-	echo '<li class="cursor li_eqLogic" data-eqLogic_id="' . $eqLogic->getId() . '"><a>' . $eqLogic->getHumanName(true) . '</a></li>';
+    echo '<li class="cursor li_eqLogic" data-eqLogic_id="' . $eqLogic->getId() . '"><a>' . $eqLogic->getHumanName(true) . '</a></li>';
 }
 ?>
            </ul>
@@ -28,14 +28,14 @@ foreach ($eqLogics as $eqLogic) {
     <div class="eqLogicThumbnailContainer">
     <?php
 foreach ($eqLogics as $eqLogic) {
-	echo '<div class="eqLogicDisplayCard cursor" data-eqLogic_id="' . $eqLogic->getId() . '" style="background-color : #ffffff; height : 200px;margin-bottom : 10px;padding : 5px;border-radius: 2px;width : 160px;margin-left : 10px;" >';
+    echo '<div class="eqLogicDisplayCard cursor" data-eqLogic_id="' . $eqLogic->getId() . '" style="background-color : #ffffff; height : 200px;margin-bottom : 10px;padding : 5px;border-radius: 2px;width : 160px;margin-left : 10px;" >';
     echo "<center>";
     if($eqLogic->getConfiguration('deviceType') == '128'){
         echo '<img src="plugins/honeywell/doc/images/Valve.png" height="105" />';
     }	
-	echo "</center>";
-	echo '<span style="font-size : 1.1em;position:relative; top : 15px;word-break: break-all;white-space: pre-wrap;word-wrap: break-word;"><center>' . $eqLogic->getHumanName(true, true) . '</center></span>';
-	echo '</div>';
+    echo "</center>";
+    echo '<span style="font-size : 1.1em;position:relative; top : 15px;word-break: break-all;white-space: pre-wrap;word-wrap: break-word;"><center>' . $eqLogic->getHumanName(true, true) . '</center></span>';
+    echo '</div>';
 }
 ?>
 </div>
@@ -59,7 +59,7 @@ foreach ($eqLogics as $eqLogic) {
                         <option value="">{{Aucun}}</option>
                         <?php
 foreach (object::all() as $object) {
-	echo '<option value="' . $object->getId() . '">' . $object->getName() . '</option>';
+    echo '<option value="' . $object->getId() . '">' . $object->getName() . '</option>';
 }
 ?>
                    </select>

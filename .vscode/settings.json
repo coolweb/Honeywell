@@ -2,6 +2,8 @@
 {
     "composer.executablePath": "C:\\ProgramData\\ComposerSetup\\bin\\composer.bat",
     "phpformatter.arguments": [],
-    "phpformatter.pharPath": "D:\\Tools\\phpCsFixer\\php-cs-fixer-v2.phar",
-    "phpformatter.logging": true
+    //"phpformatter.pharPath": "D:\\Tools\\phpCsFixer\\php-cs-fixer-v2.phar",
+    "phpformatter.composer": true,
+    "phpformatter.logging": true,
+    "files.eol": "\n"
 }

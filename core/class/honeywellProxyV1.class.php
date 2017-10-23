@@ -99,7 +99,7 @@ class HoneywellProxyV1
         }
     }
     
-    public function RetrieveUser()
+    public function retrieveUser()
     {
         $userUrl = $this->honeywellApiUrl . '/userAccount';
         
@@ -114,7 +114,7 @@ class HoneywellProxyV1
     * @param password The password to do the logon
     * @return Session The response of the session request
     */
-    public function OpenSession($userName, $password)
+    public function openSession($userName, $password)
     {
         $sessionUrl = $this->honeywellAuthUrl;
         
@@ -143,12 +143,12 @@ class HoneywellProxyV1
                 $this->sessionId = $result[1]->access_token;
                 return $result[1];
                 
-                case '401':
-                    return null;
-                    
-                    default:
-                        throw new \Exception('Unexpected http code while doing logon: ' . $result[0]);
-                }
+            case '401':
+                return null;
+                
+            default:
+                throw new \Exception('Unexpected http code while doing logon: ' . $result[0]);
+        }
     }
             
     /**
@@ -157,7 +157,7 @@ class HoneywellProxyV1
     * @param userId The id of the user retrive after opening a session
     * @return array of Location
     */
-    public function RetrieveLocations($userId)
+    public function retrieveLocations($userId)
     {
         $locationsUrl = $this->honeywellApiUrl .
                 '/location/installationInfo?userId=' . $userId . '&includeTemperatureControlSystems=true';
@@ -173,7 +173,7 @@ class HoneywellProxyV1
      * @param [string] $locationId The identifier of the location
      * @return Array of zones
      */
-    public function RetrieveZones($locationId)
+    public function retrieveZones($locationId)
     {
         $zoneUrl = $this->honeywellApiUrl . "/temperatureZone/status?locationId=" . $locationId;
 
@@ -191,7 +191,7 @@ class HoneywellProxyV1
     * @param string $status Hold | Temporary | Scheduled
     * @param date $nextTime To which time to change the temperature
     */
-    public function ChangeTemperature($sessionId, $deviceId, $temperature, $status = 'Hold', $nextTime = null)
+    public function changeTemperature($sessionId, $deviceId, $temperature, $status = 'Hold', $nextTime = null)
     {
         $temperatureUrl = $this->honeywellApiUrl . '/devices/' .
                 $deviceId . '/thermostat/changeableValues/heatSetpoint';
@@ -225,7 +225,7 @@ class HoneywellProxyV1
     * @param string $action The quick action, values: Auto - Custom - AutoWithEco - Away - DayOff - HeatingOff
     * @param date $nextTime To which time to set the quick action
     */
-    public function SetLocationQuickAction($sessionId, $locationId, $action, $nextTime = null)
+    public function setLocationQuickAction($sessionId, $locationId, $action, $nextTime = null)
     {
         $quickActionUrl = $this->honeywellApiUrl . '/evoTouchSystems?locationId='
                 . $locationId;

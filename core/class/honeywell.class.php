@@ -44,7 +44,7 @@ class honeywell extends eqLogic
         
         $jeedomHelper->logDebug('Cron start, retrieve locations');
         // todo: load zones with other method from postman, locationId is stored in plugin configuration
-        $locations = $honeywellManager->RetrieveLocations();
+        $locations = $honeywellManager->retrieveLocations();
             
         if ($locations == null) {
             $jeedomHelper->logError('Honeywell plugin class - cron, unable to get locations, ' .
@@ -73,7 +73,7 @@ class honeywell extends eqLogic
                             || $changed;
                         
                         if ($changed) {
-                            $jeedomHelper->ClearCacheAndUpdateWidget($eqLogic);
+                            $jeedomHelper->clearCacheAndUpdateWidget($eqLogic);
                         }
                     }
                 }
@@ -190,7 +190,7 @@ class honeywell extends eqLogic
         
         $jeedomHelper->logDebug('Honeywell plugin: sync devices...');
         $jeedomHelper->logInfo('Getting devices from honeywell');
-        $locations = $honeywellManager->RetrieveLocations();
+        $locations = $honeywellManager->retrieveLocations();
         
         if ($locations == null) {
             throw new Exception('Vérifiez que vous avez mis le bon nom' .
@@ -198,7 +198,7 @@ class honeywell extends eqLogic
         }
         
         $jeedomHelper->logInfo('Create device into Jeedom');
-        $eqLogics = $honeywellManager->CreateEqLogic($locations);
+        $eqLogics = $honeywellManager->createEqLogic($locations);
         $i = 0;
         
         foreach ($locations as $location) {
@@ -216,7 +216,7 @@ class honeywell extends eqLogic
                     }
                 }
         
-                $honeywellManager->CreateCommandForValve($eqLogic, $valve);
+                $honeywellManager->cCreateCommandForValve($eqLogic, $valve);
             }
         }
     }

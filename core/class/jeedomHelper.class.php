@@ -3,7 +3,7 @@ namespace coolweb\honeywell;
 
 class JeedomHelper
 {
-    public function LoadPluginConfiguration($key)
+    public function loadPluginConfiguration($key)
     {
         return config::byKey($key, 'honeywell');
     }
@@ -13,7 +13,7 @@ class JeedomHelper
     * @param string $key The name of the configuration to save
     * @param string $value The value of the configuration
     */
-    public function SavePluginConfiguration($key, $value)
+    public function savePluginConfiguration($key, $value)
     {
         config::save($key, $value, 'honeywell');
     }
@@ -80,7 +80,7 @@ class JeedomHelper
     * @param string[] $configurationKeyValue Key value pair of configuration values
     * @return eqLogic The created eqLogic
     */
-    public function CreateAndSaveEqLogic($logicalId, $name, $configurationKeyValue)
+    public function createAndSaveEqLogic($logicalId, $name, $configurationKeyValue)
     {
         $eqLogic = new eqLogic();
         $eqLogic->setLogicalId($logicalId);
@@ -110,7 +110,7 @@ class JeedomHelper
      * @param bool $showOnDashboard Indicates if show command on dashboard
      * @return void
      */
-    public function CreateCmd(
+    public function createCmd(
         $eqLogic,
         $cmdLogicalId,
         $cmdName,
@@ -118,7 +118,7 @@ class JeedomHelper
         $cmdSubType,
         $showOnDashboard,
         $unite = '°C'
-        ) {
+    ) {
         $cmd = $eqLogic->getCmd(null, $cmdLogicalId);
         if (!is_object($cmd)) {
             $cmd = new honeywellCmd();
@@ -137,7 +137,7 @@ class JeedomHelper
         }
     }
 
-    public function ClearCacheAndUpdateWidget($eqLogic)
+    public function clearCacheAndUpdateWidget($eqLogic)
     {
         $mc = cache::byKey('honeywellWidgetmobile' . $eqLogic->getId());
         $mc->remove();

@@ -21,8 +21,8 @@ class UserSessionManagerTest extends TestCase{
         'logWarning',
         'logInfo',
         'logError',
-        'LoadPluginConfiguration',
-        'SavePluginConfiguration'])
+        'loadPluginConfiguration',
+        'savePluginConfiguration'])
         ->getMock();
 
         $this->honeywellProxy = $this->getMockBuilder(HoneywellProxy::class)
@@ -35,7 +35,7 @@ class UserSessionManagerTest extends TestCase{
     }
 
     private function SetUsernameAndPassword($username, $password){
-        $this->jeedomHelper->method('LoadPluginConfiguration')
+        $this->jeedomHelper->method('loadPluginConfiguration')
         ->withConsecutive(
             [$this->equalTo('username')],
             [$this->equalTo('password')]
@@ -44,7 +44,7 @@ class UserSessionManagerTest extends TestCase{
     }
 
     private function SetUsernameAndPasswordAndUserId($username, $password, $userId){
-        $this->jeedomHelper->method('LoadPluginConfiguration')
+        $this->jeedomHelper->method('loadPluginConfiguration')
         ->withConsecutive(
             [$this->equalTo('username')],
             [$this->equalTo('password')],
@@ -54,7 +54,7 @@ class UserSessionManagerTest extends TestCase{
     }
 
     private function SetSessionId($session){
-        $this->honeywellProxy->method('OpenSession')
+        $this->honeywellProxy->method('openSession')
         ->willReturn($session);
     }
 
@@ -67,7 +67,7 @@ class UserSessionManagerTest extends TestCase{
         $session->userInfo->userID = '1234';
         $this->SetSessionId($session);
 
-        $returnSessionId = $this->target->RetrieveSessionId();
+        $returnSessionId = $this->target->retrieveSessionId();
 
         $this->assertEquals($sessionId, $returnSessionId);
     }
@@ -82,10 +82,10 @@ class UserSessionManagerTest extends TestCase{
         $this->SetSessionId($session);
 
         $this->jeedomHelper->expects($this->once())
-        ->method('SavePluginConfiguration')
+        ->method('savePluginConfiguration')
         ->with($this->equalTo('userId'), $this->equalTo('1234'));
 
-        $returnSessionId = $this->target->RetrieveSessionId();
+        $returnSessionId = $this->target->retrieveSessionId();
 
         $this->assertEquals($sessionId, $returnSessionId);
     }
@@ -93,6 +93,6 @@ class UserSessionManagerTest extends TestCase{
     public function testWhenRetrieveSessionIdAndUserNotSet_ItShouldThrowAnError(){
         $this->expectException(Exception::class);
 
-        $this->target->RetrieveSessionId();
+        $this->target->retrieveSessionId();
     }    
 }
