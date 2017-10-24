@@ -11,7 +11,7 @@ class JeedomLocation
      *
      * @var string
      */
-    public $name = '';
+    public $name = "";
 
     /**
      * The id of the location in honeywell server

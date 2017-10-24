@@ -17,8 +17,8 @@
 */
 
 /* * ***************************Includes********************************* */
-if (file_exists(dirname(__FILE__) . '/../../../../core/php/core.inc.php')) {
-    require_once dirname(__FILE__) . '/../php/honeywell.inc.php';
+if (file_exists(dirname(__FILE__) . "/../../../../core/php/core.inc.php")) {
+    require_once dirname(__FILE__) . "/../php/honeywell.inc.php";
 }
 
 class honeywell extends eqLogic
@@ -39,16 +39,16 @@ class honeywell extends eqLogic
         /**
         * @var JeedomHelper
         */
-        $jeedomHelper = $container->get('JeedomHelper');
-        $honeywellManager = $container->get('HoneywellManager');
+        $jeedomHelper = $container->get("JeedomHelper");
+        $honeywellManager = $container->get("HoneywellManager");
         
-        $jeedomHelper->logDebug('Cron start, retrieve locations');
+        $jeedomHelper->logDebug("Cron start, retrieve locations");
         // todo: load zones with other method from postman, locationId is stored in plugin configuration
         $locations = $honeywellManager->retrieveLocations();
             
         if ($locations == null) {
-            $jeedomHelper->logError('Honeywell plugin class - cron, unable to get locations, ' .
-            'check user and password account');
+            $jeedomHelper->logError("Honeywell plugin class - cron, unable to get locations, " .
+            "check user and password account");
         }
         
         $eqLogics = $jeedomHelper->loadEqLogic();
@@ -57,17 +57,17 @@ class honeywell extends eqLogic
             foreach ($locations as $location) {
                 foreach ($location->valves as $valve) {
                     if ($eqLogic->getLogicalId() == $valve->honeywellId) {
-                        $jeedomHelper->logDebug('Found valve ' . $valve->name . ' into jeedom, update values...');
+                        $jeedomHelper->logDebug("Found valve " . $valve->name . " into jeedom, update values...");
                         $changed = false;
                         
                         $changed = $eqLogic->checkAndUpdateCmd(
-                            'temperature',
+                            "temperature",
                             $valve->indoorTemperature
                         )
                             || $changed;
                             
                         $changed = $eqLogic->checkAndUpdateCmd(
-                            'wantedTemperature',
+                            "wantedTemperature",
                             $valve->wantedTemperature
                         )
                             || $changed;
@@ -133,7 +133,7 @@ class honeywell extends eqLogic
     {
     }
     
-    public function toHtml($_version = 'dashboard')
+    public function toHtml($_version = "dashboard")
     {
         $replace = $this->preToHtml($_version);
         $version = jeedom::versionAlias($_version);
@@ -141,43 +141,43 @@ class honeywell extends eqLogic
             return $replace;
         }
         
-        $deviceType = $this->getConfiguration('deviceType');
+        $deviceType = $this->getConfiguration("deviceType");
         
         // valve
-        if ($deviceType == '128') {
-            $temperature = $this->getCmd(null, 'Temperature');
-            $replace['#temperature#'] = is_object($temperature) ? $temperature->execCmd() : '';
+        if ($deviceType == "128") {
+            $temperature = $this->getCmd(null, "Temperature");
+            $replace["#temperature#"] = is_object($temperature) ? $temperature->execCmd() : "";
             
-            $wantedTemperature = $this->getCmd(null, 'WantedTemperature');
-            $replace['#wantedTemperature#'] = is_object($wantedTemperature) ? $wantedTemperature->execCmd() : '';
+            $wantedTemperature = $this->getCmd(null, "WantedTemperature");
+            $replace["#wantedTemperature#"] = is_object($wantedTemperature) ? $wantedTemperature->execCmd() : "";
             
-            $setTemperature = $this->getCmd(null, 'ChangeTemperature');
-            $replace['#SetTemperature_id#'] = is_object($setTemperature) ? $setTemperature->getId() : '';
+            $setTemperature = $this->getCmd(null, "ChangeTemperature");
+            $replace["#SetTemperature_id#"] = is_object($setTemperature) ? $setTemperature->getId() : "";
 
-            return template_replace($replace, getTemplate('core', $version, 'valve', 'honeywell'));
+            return template_replace($replace, getTemplate("core", $version, "valve", "honeywell"));
         }
 
         // thermostat tablet evohome
-        if ($deviceType == '0') {
-            $autoCmd = $this->getCmd(null, 'Auto');
-            $replace['#autoCmdId'] = is_object($autoCmd) ? $autoCmd->getId() : '';
+        if ($deviceType == "0") {
+            $autoCmd = $this->getCmd(null, "Auto");
+            $replace["#autoCmdId"] = is_object($autoCmd) ? $autoCmd->getId() : "";
 
-            $customCmd = $this->getCmd(null, 'Custom');
-            $replace['#customCmdId'] = is_object($customCmd) ? $customCmd->getId() : '';
+            $customCmd = $this->getCmd(null, "Custom");
+            $replace["#customCmdId"] = is_object($customCmd) ? $customCmd->getId() : "";
 
-            $autoWithEcoCmd = $this->getCmd(null, 'AutoWithEco');
-            $replace['#ecoCmdId'] = is_object($autoWithEcoCmd) ? $autoWithEcoCmd->getId() : '';
+            $autoWithEcoCmd = $this->getCmd(null, "AutoWithEco");
+            $replace["#ecoCmdId"] = is_object($autoWithEcoCmd) ? $autoWithEcoCmd->getId() : "";
 
-            $awayCmd = $this->getCmd(null, 'Away');
-            $replace['#awayCmdId'] = is_object($awayCmd) ? $awayCmd->getId() : '';
+            $awayCmd = $this->getCmd(null, "Away");
+            $replace["#awayCmdId"] = is_object($awayCmd) ? $awayCmd->getId() : "";
 
-            $dayCmd = $this->getCmd(null, 'DayOff');
-            $replace['#dayOffCmdId'] = is_object($dayCmd) ? $dayCmd->getId() : '';
+            $dayCmd = $this->getCmd(null, "DayOff");
+            $replace["#dayOffCmdId"] = is_object($dayCmd) ? $dayCmd->getId() : "";
 
-            $heatingOffCmd = $this->getCmd(null, 'HeatingOff');
-            $replace['#heatingOffCmdId'] = is_object($heatingOffCmd) ? $heatingOffCmd->getId() : '';
+            $heatingOffCmd = $this->getCmd(null, "HeatingOff");
+            $replace["#heatingOffCmdId"] = is_object($heatingOffCmd) ? $heatingOffCmd->getId() : "";
 
-            return template_replace($replace, getTemplate('core', $version, 'station', 'honeywell'));
+            return template_replace($replace, getTemplate("core", $version, "station", "honeywell"));
         }
     }
     
@@ -185,19 +185,19 @@ class honeywell extends eqLogic
     {
         $container = DI\ContainerBuilder::buildDevContainer();
         
-        $jeedomHelper = $container->get('JeedomHelper');
-        $honeywellManager = $container->get('HoneywellManager');
+        $jeedomHelper = $container->get("JeedomHelper");
+        $honeywellManager = $container->get("HoneywellManager");
         
-        $jeedomHelper->logDebug('Honeywell plugin: sync devices...');
-        $jeedomHelper->logInfo('Getting devices from honeywell');
+        $jeedomHelper->logDebug("Honeywell plugin: sync devices...");
+        $jeedomHelper->logInfo("Getting devices from honeywell");
         $locations = $honeywellManager->retrieveLocations();
         
         if ($locations == null) {
-            throw new Exception('Vérifiez que vous avez mis le bon nom' .
-            'd\'utilisateur et mot de passe');
+            throw new Exception("Vérifiez que vous avez mis le bon nom" .
+            "d\'utilisateur et mot de passe");
         }
         
-        $jeedomHelper->logInfo('Create device into Jeedom');
+        $jeedomHelper->logInfo("Create device into Jeedom");
         $eqLogics = $honeywellManager->createEqLogic($locations);
         $i = 0;
         
@@ -245,10 +245,10 @@ class honeywellCmd extends cmd
     {
         $container = DI\ContainerBuilder::buildDevContainer();
         
-        $jeedomHelper = $container->get('JeedomHelper');
-        $honeywellManager = $container->get('HoneywellManager');
+        $jeedomHelper = $container->get("JeedomHelper");
+        $honeywellManager = $container->get("HoneywellManager");
         
-        if ($this->getType() == 'info') {
+        if ($this->getType() == "info") {
             return;
         }
         

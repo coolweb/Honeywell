@@ -27,12 +27,12 @@ class UserSessionManager
      */
     public function retrieveSessionId()
     {
-        $user = $this->jeedomHelper->loadPluginConfiguration('username');
-        $password = $this->jeedomHelper->loadPluginConfiguration('password');
-        $userId = $this->jeedomHelper->loadPluginConfiguration('userId');
+        $user = $this->jeedomHelper->loadPluginConfiguration("username");
+        $password = $this->jeedomHelper->loadPluginConfiguration("password");
+        $userId = $this->jeedomHelper->loadPluginConfiguration("userId");
 
         if ($user == null || $password == null) {
-            $message = 'User or password not found in configuration plugin';
+            $message = "User or password not found in configuration plugin";
             $this->jeedomHelper->logError($message);
             throw new \Exception($message);
         }
@@ -43,8 +43,8 @@ class UserSessionManager
             $userInfo = $this->honeywellProxy->retrieveUser($token);
 
             if ($userInfo->userId !== $userId) {
-                $this->jeedomHelper->logDebug('New user id stored: ' . $userInfo->userId);
-                $this->jeedomHelper->savePluginConfiguration('userId', $userInfo->userId);
+                $this->jeedomHelper->logDebug("New user id stored: " . $userInfo->userId);
+                $this->jeedomHelper->savePluginConfiguration("userId", $userInfo->userId);
             }
         }
         
@@ -57,6 +57,6 @@ class UserSessionManager
      */
     public function retrieveUserIdInConfiguration()
     {
-        return $this->jeedomHelper->loadPluginConfiguration('userId');
+        return $this->jeedomHelper->loadPluginConfiguration("userId");
     }
 }

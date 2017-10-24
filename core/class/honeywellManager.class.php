@@ -46,16 +46,16 @@ class HoneywellManager
             $jeedomLoc = new JeedomLocation();
             $jeedomLoc->name = $location->locationInfo->name;
             $jeedomLoc->honeywellId = $location->locationInfo->locationId;
-            $this->jeedomHelper->savePluginConfiguration('locationId', $jeedomLoc->honeywellId);
+            $this->jeedomHelper->savePluginConfiguration("locationId", $jeedomLoc->honeywellId);
 
             foreach ($location->gateways as $gateway) {
                 foreach ($gateway->temperatureControlSystems as $temperatureSys) {
                     foreach ($temperatureSys->zones as $zone) {
-                        if ($zone->modelType == 'HeatingZone') {
+                        if ($zone->modelType == "HeatingZone") {
                             $valve = new JeedomThermostaticValve();
                             
                             $valve->honeywellId = $zone->zoneId;
-                            $valve->name = $zone->name . ' (' . $jeedomLoc->name . ')';
+                            $valve->name = $zone->name . " (" . $jeedomLoc->name . ")";
                             //$valve->indoorTemperature = $device->thermostat->indoorTemperature;
                             //$valve->wantedTemperature = $device->thermostat->changeableValues->heatSetpoint->value;
                             
@@ -86,20 +86,20 @@ class HoneywellManager
     */
     public function createEqLogic($locations)
     {
-        $this->jeedomHelper->logDebug('HoneywellManager - createEqLogic: start');
+        $this->jeedomHelper->logDebug("HoneywellManager - createEqLogic: start");
         $eqLogics = array();
         
         /** @var Location $location */
         foreach ($locations as $location) {
-            $this->jeedomHelper->logDebug('HoneywellManager - createEqLogic: take valve for ' .
+            $this->jeedomHelper->logDebug("HoneywellManager - createEqLogic: take valve for " .
                 $location->name);
             
-            $this->jeedomHelper->logDebug('HoneywellManager - createEqLogic: check to create location');
+            $this->jeedomHelper->logDebug("HoneywellManager - createEqLogic: check to create location");
             $eqLogic = $this->jeedomHelper->getEqLogicByLogicalId($location->honeywellId);
             if (!is_object($eqLogic)) {
-                $this->jeedomHelper->logDebug('HoneywellManager - createEqLogic:' .
-                'eqLogic doesn\'t exist, create it');
-                $configurations = array('deviceType' => '0');
+                $this->jeedomHelper->logDebug("HoneywellManager - createEqLogic:" .
+                "eqLogic doesn\'t exist, create it");
+                $configurations = array("deviceType" => "0");
                 $eqLogic = $this->jeedomHelper->createAndSaveEqLogic(
                     $location->honeywellId,
                     $location->name,
@@ -112,16 +112,16 @@ class HoneywellManager
             $valves = $location->valves;
             
             foreach ($valves as $valve) {
-                $this->jeedomHelper->logDebug('HoneywellManager - createEqLogic: create eq Logic for ' .
+                $this->jeedomHelper->logDebug("HoneywellManager - createEqLogic: create eq Logic for " .
                     $valve->name);
                 
                 $eqLogic = $this->jeedomHelper->getEqLogicByLogicalId($valve->honeywellId);
                 
                 if (!is_object($eqLogic)) {
-                    $this->jeedomHelper->logDebug('HoneywellManager - createEqLogic:' .
-                    'eqLogic doesn\'t exist, create it');
+                    $this->jeedomHelper->logDebug("HoneywellManager - createEqLogic:" .
+                    "eqLogic doesn\'t exist, create it");
                     
-                    $configurations = array('deviceType' => '128');
+                    $configurations = array("deviceType" => "128");
                     $eqLogicCreated = $this->jeedomHelper->createAndSaveEqLogic(
                         $valve->honeywellId,
                         $valve->name,
@@ -135,7 +135,7 @@ class HoneywellManager
             }
         }
         
-        $this->jeedomHelper->logDebug('HoneywellManager - createEqLogic: end');
+        $this->jeedomHelper->logDebug("HoneywellManager - createEqLogic: end");
         
         return $eqLogics;
     }
@@ -149,56 +149,56 @@ class HoneywellManager
     */
     public function cCreateCommandForValve($eqLogic, $valve)
     {
-        $this->jeedomHelper->logDebug('HoneywellManager - ccCreateCommandForValve: start');
-        $this->jeedomHelper->logDebug('HoneywellManager - ccCreateCommandForValve:' .
-        'Create temperature cmd for ' . $valve->name);
+        $this->jeedomHelper->logDebug("HoneywellManager - ccCreateCommandForValve: start");
+        $this->jeedomHelper->logDebug("HoneywellManager - ccCreateCommandForValve:" .
+        "Create temperature cmd for " . $valve->name);
             
         $this->jeedomHelper->createCmd(
             $eqLogic,
-            'Temperature',
-            __('Température', __FILE__),
-            'info',
-            'numeric',
+            "Temperature",
+            __("Température", __FILE__),
+            "info",
+            "numeric",
             true
         );
         
         $this->jeedomHelper->createCmd(
             $eqLogic,
-            'WantedTemperature',
-            __('Température programmée', __FILE__),
-            'info',
-            'numeric',
+            "WantedTemperature",
+            __("Température programmée", __FILE__),
+            "info",
+            "numeric",
             false
         );
         
         $this->jeedomHelper->createCmd(
             $eqLogic,
-            'ChangeTemperature',
-            __('Changer température', __FILE__),
-            'action',
-            'other',
+            "ChangeTemperature",
+            __("Changer température", __FILE__),
+            "action",
+            "other",
             true
         );
         
         $this->jeedomHelper->createCmd(
             $eqLogic,
-            'temperatureUp',
-            __('Monter température', __FILE__),
-            'action',
-            'other',
+            "temperatureUp",
+            __("Monter température", __FILE__),
+            "action",
+            "other",
             true
         );
         
         $this->jeedomHelper->createCmd(
             $eqLogic,
-            'temperatureDown',
-            __('Descendre température', __FILE__),
-            'action',
-            'other',
+            "temperatureDown",
+            __("Descendre température", __FILE__),
+            "action",
+            "other",
             true
         );
 
-        $this->jeedomHelper->logDebug('HoneywellManager - cCreateCommandForValve: end');
+        $this->jeedomHelper->logDebug("HoneywellManager - cCreateCommandForValve: end");
     }
     
     /**
@@ -209,75 +209,75 @@ class HoneywellManager
     */
     public function createCommandsForLocation($eqLogic, JeedomLocation $location)
     {
-        $this->jeedomHelper->logDebug('HoneywellManager - createCommandsForLocation: start');
-        $this->jeedomHelper->logDebug('HoneywellManager - createCommandsForLocation:' .
-        'Create quick action auto cmd for ' . $location->name);
+        $this->jeedomHelper->logDebug("HoneywellManager - createCommandsForLocation: start");
+        $this->jeedomHelper->logDebug("HoneywellManager - createCommandsForLocation:" .
+        "Create quick action auto cmd for " . $location->name);
             
         $this->jeedomHelper->createCmd(
             $eqLogic,
-            'Auto',
-            __('Automatique', __FILE__),
-            'action',
-            'other',
+            "Auto",
+            __("Automatique", __FILE__),
+            "action",
+            "other",
             true
         );
         
-        $this->jeedomHelper->logDebug('HoneywellManager - createCommandsForLocation:' .
-        'Create quick action custom cmd for ' . $location->name);
+        $this->jeedomHelper->logDebug("HoneywellManager - createCommandsForLocation:" .
+        "Create quick action custom cmd for " . $location->name);
         $this->jeedomHelper->createCmd(
             $eqLogic,
-            'Custom',
-            __('Personnalisé', __FILE__),
-            'action',
-            'other',
+            "Custom",
+            __("Personnalisé", __FILE__),
+            "action",
+            "other",
             true
         );
         
-        $this->jeedomHelper->logDebug('HoneywellManager - createCommandsForLocation:' .
-        'Create quick action eco cmd for ' . $location->name);
+        $this->jeedomHelper->logDebug("HoneywellManager - createCommandsForLocation:" .
+        "Create quick action eco cmd for " . $location->name);
         $this->jeedomHelper->createCmd(
             $eqLogic,
-            'AutoWithEco',
-            __('Economique', __FILE__),
-            'action',
-            'other',
+            "AutoWithEco",
+            __("Economique", __FILE__),
+            "action",
+            "other",
             true
         );
         
-        $this->jeedomHelper->logDebug('HoneywellManager - createCommandsForLocation:' .
-        'Create quick action away cmd for ' . $location->name);
+        $this->jeedomHelper->logDebug("HoneywellManager - createCommandsForLocation:" .
+        "Create quick action away cmd for " . $location->name);
         $this->jeedomHelper->createCmd(
             $eqLogic,
-            'Away',
-            __('Absent', __FILE__),
-            'action',
-            'other',
+            "Away",
+            __("Absent", __FILE__),
+            "action",
+            "other",
             true
         );
         
-        $this->jeedomHelper->logDebug('HoneywellManager - createCommandsForLocation:' .
-        'Create quick action day off cmd for ' . $location->name);
+        $this->jeedomHelper->logDebug("HoneywellManager - createCommandsForLocation:" .
+        "Create quick action day off cmd for " . $location->name);
         $this->jeedomHelper->createCmd(
             $eqLogic,
-            'DayOff',
-            __('Journée Off', __FILE__),
-            'action',
-            'other',
+            "DayOff",
+            __("Journée Off", __FILE__),
+            "action",
+            "other",
             true
         );
         
-        $this->jeedomHelper->logDebug('HoneywellManager - createCommandsForLocation:' .
-        'Create quick action heating off cmd for ' . $location->name);
+        $this->jeedomHelper->logDebug("HoneywellManager - createCommandsForLocation:" .
+        "Create quick action heating off cmd for " . $location->name);
         $this->jeedomHelper->createCmd(
             $eqLogic,
-            'HeatingOff',
-            __('Chauffage Off', __FILE__),
-            'action',
-            'other',
+            "HeatingOff",
+            __("Chauffage Off", __FILE__),
+            "action",
+            "other",
             true
         );
         
-        $this->jeedomHelper->logDebug('HoneywellManager - createCommandsForLocation: end');
+        $this->jeedomHelper->logDebug("HoneywellManager - createCommandsForLocation: end");
     }
     
     /**
@@ -316,7 +316,7 @@ class HoneywellManager
             return null;
         }
         
-        $this->honeywellProxy->changeTemperature($sessionId, $valveHoneywellId, $temperature, 'Temporary', $until);
+        $this->honeywellProxy->changeTemperature($sessionId, $valveHoneywellId, $temperature, "Temporary", $until);
     }
 
     /**
@@ -357,7 +357,7 @@ class HoneywellManager
             return null;
         }
         
-        $this->honeywellProxy->changeTemperature($sessionId, $valveHoneywellId, null, 'Scheduled');
+        $this->honeywellProxy->changeTemperature($sessionId, $valveHoneywellId, null, "Scheduled");
     }
 
     /**
@@ -408,17 +408,17 @@ class HoneywellManager
      */
     public function execCommand($honeywellDeviceId, $cmdName, $cmdOptions)
     {
-        $this->jeedomHelper->logDebug('Execute cmd ' . $cmdName);
-        $this->jeedomHelper->logDebug('Options ' . print_r($cmdOptions, true));
+        $this->jeedomHelper->logDebug("Execute cmd " . $cmdName);
+        $this->jeedomHelper->logDebug("Options " . print_r($cmdOptions, true));
 
         $heatSetpoint = 0;
-        $mode = 'permanent';
+        $mode = "permanent";
         $until;
-        if (is_array($cmdOptions) && array_key_exists('heatSetpoint', $cmdOptions)) {
-            $heatSetpoint = $cmdOptions['heatSetpoint'];
-            $mode = $cmdOptions['status'];
-            if ($mode == 'temporary') {
-                $until = date_create($cmdOptions['until']);
+        if (is_array($cmdOptions) && array_key_exists("heatSetpoint", $cmdOptions)) {
+            $heatSetpoint = $cmdOptions["heatSetpoint"];
+            $mode = $cmdOptions["status"];
+            if ($mode == "temporary") {
+                $until = date_create($cmdOptions["until"]);
             }
         } else {
             $heatSetpoint = $cmdOptions;
@@ -426,10 +426,10 @@ class HoneywellManager
 
         switch ($cmdName) {
             case 'ChangeTemperature':
-                if ($mode == 'scheduled') {
+                if ($mode == "scheduled") {
                     $this->setTemperatureToScheduleMode($honeywellDeviceId);
                 } else {
-                    if ($mode == 'permanent') {
+                    if ($mode == "permanent") {
                         $this->setTemperaturePermanent($honeywellDeviceId, $heatSetpoint);
                     } else {
                         $this->setTemperatureUntil($honeywellDeviceId, $heatSetpoint, $until);
@@ -438,7 +438,7 @@ class HoneywellManager
                 break;
             
             case 'temperatureUp':
-                if ($mode == 'scheduled') {
+                if ($mode == "scheduled") {
                     $this->setTemperatureToScheduleMode($honeywellDeviceId);
                 } else {
                     $this->temperatureUp($honeywellDeviceId);
@@ -446,7 +446,7 @@ class HoneywellManager
                 break;
 
             case 'temperatureDown':
-                if ($mode == 'scheduled') {
+                if ($mode == "scheduled") {
                     $this->setTemperatureToScheduleMode($honeywellDeviceId);
                 } else {
                     $this->temperatureDown($honeywellDeviceId);
@@ -463,7 +463,7 @@ class HoneywellManager
                 break;
 
             default:
-                $this->jeedomHelper->logWarning('Unknown command name to execute :'
+                $this->jeedomHelper->logWarning("Unknown command name to execute :"
                 . $cmdName);
                 break;
         }
