@@ -1,14 +1,20 @@
 <?php
+namespace coolweb\honeywell\test;
+
 use PHPUnit\Framework\TestCase;
 use coolweb\honeywell\HoneywellManager;
 use coolweb\honeywell\HoneywellProxyV1;
 use coolweb\honeywell\userSessionManager;
 use coolweb\honeywell\jeedomHelper;
-use coolweb\honeywell\apiContract;
+use coolweb\honeywell\JeedomLocation;
+use coolweb\honeywell\JeedomThermostaticValve;
+use coolweb\honeywell\apiContract\Location;
+use coolweb\honeywell\apiContract\Zone;
+use coolweb\honeywell\apiContract\Gateway;
+use coolweb\honeywell\apiContract\TemperatureControlSystem;
 
-include_once('test.inc.php');
-
-class HoneywellManagerTest extends TestCase{
+class HoneywellManagerTest extends TestCase
+{
     /** @var UserSessionManager */
     private $userSessionManager;
 
@@ -21,7 +27,8 @@ class HoneywellManagerTest extends TestCase{
     /** @var HoneywellManager */
     private $target;
 
-    protected function setUp(){
+    protected function setUp()
+    {
         $this->userSessionManager = $this->getMockBuilder(UserSessionManager::class)
         ->setMethods([
         'retrieveSessionId',
@@ -49,50 +56,52 @@ class HoneywellManagerTest extends TestCase{
         ->getMock();
 
         $this->target = new HoneywellManager(
-            $this->honeylwellProxy, 
+            $this->honeylwellProxy,
             $this->userSessionManager,
-            $this->jeedomHelper);
+            $this->jeedomHelper
+        );
     }
 
-    private function SetSessionId($sessionId){
+    private function setSessionId($sessionId)
+    {
         $this->userSessionManager
         ->method('retrieveSessionId')
-        ->willReturn($sessionId);        
+        ->willReturn($sessionId);
     }
 
-    private function SetLocations($locations)
+    private function setLocations($locations)
     {
         $this->honeylwellProxy
         ->method('retrieveLocations')
         ->willReturn($locations);
     }
 
-    private function SetLogicalIdInJeedom($logicalId, $logicalId2 = null)
+    private function setLogicalIdInJeedom($logicalId, $logicalId2 = null)
     {
-        if(isset($logicalId2)){
+        if (isset($logicalId2)) {
             $this->jeedomHelper
             ->method('getEqLogicByLogicalId')
             ->withConsecutive([$this->equalTo($logicalId)], [$this->equalTo($logicalId2)])
-            ->willReturnOnConsecutiveCalls(new stdClass(), new stdClass());
+            ->willReturnOnConsecutiveCalls(new \stdClass(), new \stdClass());
         } else {
             $this->jeedomHelper
             ->method('getEqLogicByLogicalId')
             ->with($this->equalTo($logicalId))
-            ->willReturn(new stdClass());
+            ->willReturn(new \stdClass());
         }
     }
 
-    public function testWhenRetrieveLocationsAndretrieveSessionIdReturnNull_ItShouldReturnNull()
+    public function testWhenRetrieveLocationsAndRetrieveSessionIdReturnNullItShouldReturnNull()
     {
-        $this->SetSessionId(null);
-        $this->SetLocations(array());
+        $this->setSessionId(null);
+        $this->setLocations(array());
 
         $result = $this->target->RetrieveLocations();
 
         $this->assertNull($result);
     }
 
-    public function testWhenRetrieveLocationsAndOneValve_ItShouldReturnLocationsWithValveAndSaveLocationId()
+    public function testWhenRetrieveLocationsAndOneValveItShouldReturnLocationsWithValveAndSaveLocationId()
     {
         $loc1 = new Location();
         $loc1->locationInfo->name = 'house';
@@ -114,8 +123,8 @@ class HoneywellManagerTest extends TestCase{
 
         $locations = array($loc1);
 
-        $this->SetSessionId('1234');
-        $this->SetLocations($locations);
+        $this->setSessionId('1234');
+        $this->setLocations($locations);
 
         $this->jeedomHelper
         ->expects($this->once())
@@ -128,11 +137,11 @@ class HoneywellManagerTest extends TestCase{
         $this->assertEquals(1, sizeof($result[0]->valves));
     }
 
-    public function testcreateEqLogicWhenDeviceExistsInJeedom_ItShouldDoNothing()
+    public function testCreateEqLogicWhenDeviceExistsInJeedomItShouldDoNothing()
     {
         $logicalId = '123';
         $logicalId2 = '456';
-        $this->SetLogicalIdInJeedom($logicalId, $logicalId2);
+        $this->setLogicalIdInJeedom($logicalId, $logicalId2);
         
         $loc1 = new JeedomLocation();
         $loc1->name = 'house';
@@ -147,10 +156,10 @@ class HoneywellManagerTest extends TestCase{
         ->expects($this->never())
         ->method('createAndSaveEqLogic');
 
-        $this->target->createEqLogic($locations);        
+        $this->target->createEqLogic($locations);
     }
 
-    public function testcreateEqLogicWhenDeviceNotExistsInJeedom_ItShouldcreateEqLogic()
+    public function testCreateEqLogicWhenDeviceNotExistsInJeedomItShouldCreateEqLogic()
     {
         $logicalId = '123';
         
@@ -166,11 +175,12 @@ class HoneywellManagerTest extends TestCase{
         ->expects($this->exactly(2))
         ->method('createAndSaveEqLogic');
 
-        $this->target->createEqLogic($locations);        
+        $this->target->createEqLogic($locations);
     }
 
-    public function testcCreateCommandForValve_ShouldCreateCommands(){
-        $eqLogic = new stdClass();
+    public function testCreateCommandForValveShouldCreateCommands()
+    {
+        $eqLogic = new \stdClass();
         $valve = new JeedomThermostaticValve();
         $valve->name = "test";
 
@@ -178,11 +188,12 @@ class HoneywellManagerTest extends TestCase{
         ->expects($this->exactly(5))
         ->method('createCmd');
 
-        $this->target->cCreateCommandForValve($eqLogic, $valve);        
+        $this->target->cCreateCommandForValve($eqLogic, $valve);
     }
 
-    public function testCreateCommandsForLocation_ShouldCreateCommands(){
-        $eqLogic = new stdClass();
+    public function testCreateCommandsForLocationShouldCreateCommands()
+    {
+        $eqLogic = new \stdClass();
         $location = new JeedomLocation();
         $location->name = 'test';
 
@@ -193,32 +204,38 @@ class HoneywellManagerTest extends TestCase{
         $this->target->createCommandsForLocation($eqLogic, $location);
     }
 
-    public function testtemperatureUpWhen19_3ItShouldSet19_5(){
+    public function testTemperatureUpWhen193ItShouldSet195()
+    {
         $result = $this->target->temperatureUp("xxx", 19.3);
         $this->assertEquals(19.5, $result);
     }
 
-    public function testtemperatureUpWhen19_5ItShouldSet20(){
+    public function testTemperatureUpWhen195ItShouldSet20()
+    {
         $result = $this->target->temperatureUp("xxx", 19.5);
         $this->assertEquals(20, $result);
     }
 
-    public function testtemperatureUpWhen19_6ItShouldSet20(){
+    public function testTemperatureUpWhen196ItShouldSet20()
+    {
         $result = $this->target->temperatureUp("xxx", 19.6);
         $this->assertEquals(20, $result);
     }
 
-    public function testtemperatureDownWhen19_3ItShouldSet19(){
+    public function testTemperatureDownWhen193ItShouldSet19()
+    {
         $result = $this->target->temperatureDown("xxx", 19.3);
         $this->assertEquals(19, $result);
     }
 
-    public function testtemperatureDownWhen19_6ItShouldSet19_5(){
+    public function testTemperatureDownWhen196ItShouldSet195()
+    {
         $result = $this->target->temperatureDown("xxx", 19.6);
         $this->assertEquals(19.5, $result);
     }
 
-    public function testtemperatureDownWhen19_5ItShouldSet19(){
+    public function testTemperatureDownWhen195ItShouldSet19()
+    {
         $result = $this->target->temperatureDown("xxx", 19.5);
         $this->assertEquals(19, $result);
     }

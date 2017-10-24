@@ -1,9 +1,15 @@
 <?php
+namespace coolweb\honeywell\test;
+
 use PHPUnit\Framework\TestCase;
+use coolweb\honeywell\UserSessionManager;
+use coolweb\honeywell\jeedomHelper;
+use coolweb\honeywell\HoneywellProxyV1;
+use coolweb\honeywell\apiContract\Session;
+use coolweb\honeywell\apiContract\UserInfo;
 
-include_once('test.inc.php');
-
-class UserSessionManagerTest extends TestCase{
+class UserSessionManagerTest extends TestCase
+{
     /** @var JeedomHelper */
     private $jeedomHelper;
 
@@ -25,16 +31,23 @@ class UserSessionManagerTest extends TestCase{
         'savePluginConfiguration'])
         ->getMock();
 
-        $this->honeywellProxy = $this->getMockBuilder(HoneywellProxy::class)
+        $this->honeywellProxy = $this->getMockBuilder(HoneywellProxyV1::class)
         ->setMethods([
-        'OpenSession'])
+        "openSession",
+        "retrieveUser"])
         ->disableOriginalConstructor()
         ->getMock();
 
-        $this->target = new UserSessionManager($this->jeedomHelper, $this->honeywellProxy);
+        $this->target = $this->getMockBuilder(UserSessionManager::class)        
+        ->setConstructorArgs([$this->jeedomHelper, $this->honeywellProxy])        
+        ->setMethods([
+            "retrieveUser"
+        ])
+        ->getMock();
     }
 
-    private function SetUsernameAndPassword($username, $password){
+    private function setUsernameAndPassword($username, $password)
+    {
         $this->jeedomHelper->method('loadPluginConfiguration')
         ->withConsecutive(
             [$this->equalTo('username')],
@@ -43,7 +56,8 @@ class UserSessionManagerTest extends TestCase{
         ->willReturnOnConsecutiveCalls($username, $password);
     }
 
-    private function SetUsernameAndPasswordAndUserId($username, $password, $userId){
+    private function setUsernameAndPasswordAndUserId($username, $password, $userId)
+    {
         $this->jeedomHelper->method('loadPluginConfiguration')
         ->withConsecutive(
             [$this->equalTo('username')],
@@ -53,46 +67,57 @@ class UserSessionManagerTest extends TestCase{
         ->willReturnOnConsecutiveCalls($username, $password, $userId);
     }
 
-    private function SetSessionId($session){
+    private function setSessionId($session)
+    {
         $this->honeywellProxy->method('openSession')
         ->willReturn($session);
     }
 
-    public function testWhenRetrieveSessionIdAndUserAndPasswordExistAndNoUserIDStoredInConfiguration_ItShouldOpenASession(){
-        $this->SetUsernameAndPassword('xxx', '1234');
-        $sessionId = 'yyyy';
+    private function setUserId($userId){
+        $userInfo = new \stdClass();
+        @$userInfo->userId = $userId;
+        $this->honeywellProxy->method('retrieveUser')
+        ->willReturn($userInfo);
+    }
+
+    public function testWhenRetrieveSessionIdAndUserAndPasswordExistAndNoUserIDStoredInConfItShouldOpenASession()
+    {
+        $this->setUsernameAndPassword("xxx", "1234", "1234");
+        $sessionId = "yyyy";
         $session = new Session();
-        $session->sessionId = $sessionId;
+        $session->access_token = $sessionId;
         $session->userInfo = new UserInfo();
-        $session->userInfo->userID = '1234';
-        $this->SetSessionId($session);
+        $session->userInfo->userID = "1234";
+        $this->setSessionId($session);
+        $this->setUserId("1234");
 
         $returnSessionId = $this->target->retrieveSessionId();
 
         $this->assertEquals($sessionId, $returnSessionId);
     }
 
-    public function testWhenRetrieveSessionIdAndUserAndPasswordExistAndUserIDStoredInConfigurationNotSame_ItShouldOpenASessionAndStoreUserID(){
-        $this->SetUsernameAndPasswordAndUserId('xxx', '1234', '4321');
+    public function testWhenRetrieveSessionIdAndUserAndPwdExistAndUserIDStoredInConfNotSameItShouldOpenASessionAndStoreUserID()
+    {
+        $this->setUsernameAndPasswordAndUserId('xxx', '1234', "4321");
         $sessionId = 'yyyy';
         $session = new Session();
-        $session->sessionId = $sessionId;
-        $session->userInfo = new UserInfo();
-        $session->userInfo->userID = '1234';
-        $this->SetSessionId($session);
-
+        $session->access_token = $sessionId;
+        $this->setSessionId($session);
+        $this->setUserId("456");
+        
         $this->jeedomHelper->expects($this->once())
         ->method('savePluginConfiguration')
-        ->with($this->equalTo('userId'), $this->equalTo('1234'));
+        ->with($this->equalTo('userId'), $this->equalTo("456"));
 
         $returnSessionId = $this->target->retrieveSessionId();
 
         $this->assertEquals($sessionId, $returnSessionId);
     }
 
-    public function testWhenRetrieveSessionIdAndUserNotSet_ItShouldThrowAnError(){
-        $this->expectException(Exception::class);
+    public function testWhenRetrieveSessionIdAndUserNotSetItShouldThrowAnError()
+    {
+        $this->expectException(\Exception::class);
 
         $this->target->retrieveSessionId();
-    }    
+    }
 }

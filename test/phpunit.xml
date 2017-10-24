@@ -6,7 +6,8 @@
          beStrictAboutOutputDuringTests="true"
          beStrictAboutTestsThatDoNotTestAnything="true"
          beStrictAboutTodoAnnotatedTests="true"
-         verbose="true">
+         verbose="true"
+         bootstrap="bootstrap.php">
     <php>
         <var name="unitTest" value="true" />
     </php>

@@ -8,4 +8,7 @@ class Session
     
     /** @var UserInfo */
     public $userInfo;
+
+    /** @var string */
+    public $access_token;
 }

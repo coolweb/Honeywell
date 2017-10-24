@@ -33,8 +33,11 @@ module.exports = function (grunt) {
             application: {
                 src: [
                     'core/**/*.php',
+                    'test/**/*.php',
                     '!core/class/honeywell.class.php',
-                    '!core/class/honeywellProxy.class.php'
+                    '!core/class/honeywellProxy.class.php',
+                    '!test/cmd.php',
+                    '!test/eqLogic.php'
                 ]
             },
             options: {

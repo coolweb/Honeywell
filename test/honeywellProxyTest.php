@@ -1,9 +1,9 @@
 <?php
+namespace coolweb\honeywell\test;
+
 use PHPUnit\Framework\TestCase;
 use coolweb\honeywell as honeywell;
 use coolweb\honeywell\apiContract;
-
-include_once('test.inc.php');
 
 class HoneywellProxyTest extends TestCase
 {
@@ -23,15 +23,15 @@ class HoneywellProxyTest extends TestCase
         ->getMock();
     }
 
-    public function testWhenLogonOk_ItShouldReturnTheResponseData()
+    public function testWhenLogonOkItShouldReturnTheResponseData()
     {
         $target = $this->getMockBuilder(\coolweb\honeywell\HoneywellProxyV1::class)
-        ->setMethods([        
+        ->setMethods([
         'doJsonCall'])
         ->setConstructorArgs(array($this->jeedomHelper))
         ->getMock();
 
-        $responseData = new stdClass();
+        $responseData = new \stdClass();
         @$responseData->access_token = "123";
 
         $target->method('doJsonCall')
@@ -40,10 +40,10 @@ class HoneywellProxyTest extends TestCase
         $this->assertEquals($responseData, $result);
     }
 
-    public function testWhenBadUserPasswordOk_ItShouldReturnNull()
+    public function testWhenBadUserPasswordOkItShouldReturnNull()
     {
         $target = $this->getMockBuilder(\coolweb\honeywell\HoneywellProxyV1::class)
-        ->setMethods([        
+        ->setMethods([
         'doJsonCall'])
         ->setConstructorArgs(array($this->jeedomHelper))
         ->getMock();
@@ -55,10 +55,10 @@ class HoneywellProxyTest extends TestCase
         $this->assertNull($result);
     }
 
-    public function testWhenUnwantedHttpCode_ItShouldThrowException()
+    public function testWhenUnwantedHttpCodeItShouldThrowException()
     {
         $target = $this->getMockBuilder(\coolweb\honeywell\HoneywellProxyV1::class)
-        ->setMethods([        
+        ->setMethods([
         'doJsonCall'])
         ->setConstructorArgs(array($this->jeedomHelper))
         ->getMock();
@@ -66,12 +66,9 @@ class HoneywellProxyTest extends TestCase
         $target->method('doJsonCall')
         ->willReturn(array('503'));
 
-        try {
-            $result = $target->openSession('xxx', '1234');
-        } catch (Exception $e) {
-            $this->assertTrue(true);
-            return;
-        }
+        $this->expectException(\Exception::class);
+        
+        $result = $target->openSession('xxx', '1234');
 
         $this->assertTrue(false, 'Exception should be throw');
     }
