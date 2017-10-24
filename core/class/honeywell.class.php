@@ -216,7 +216,7 @@ class honeywell extends eqLogic
                     }
                 }
         
-                $honeywellManager->cCreateCommandForValve($eqLogic, $valve);
+                $honeywellManager->createCommandForValve($eqLogic, $valve);
             }
         }
     }

@@ -147,10 +147,10 @@ class HoneywellManager
     * @param JeedomThermostaticValve $valve
     * @return void
     */
-    public function cCreateCommandForValve($eqLogic, $valve)
+    public function createCommandForValve($eqLogic, $valve)
     {
-        $this->jeedomHelper->logDebug("HoneywellManager - ccCreateCommandForValve: start");
-        $this->jeedomHelper->logDebug("HoneywellManager - ccCreateCommandForValve:" .
+        $this->jeedomHelper->logDebug("HoneywellManager - createCommandForValve: start");
+        $this->jeedomHelper->logDebug("HoneywellManager - createCommandForValve:" .
         "Create temperature cmd for " . $valve->name);
             
         $this->jeedomHelper->createCmd(
@@ -198,7 +198,7 @@ class HoneywellManager
             true
         );
 
-        $this->jeedomHelper->logDebug("HoneywellManager - cCreateCommandForValve: end");
+        $this->jeedomHelper->logDebug("HoneywellManager - createCommandForValve: end");
     }
     
     /**
