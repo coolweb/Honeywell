@@ -38,8 +38,8 @@ class UserSessionManagerTest extends TestCase
         ->disableOriginalConstructor()
         ->getMock();
 
-        $this->target = $this->getMockBuilder(UserSessionManager::class)        
-        ->setConstructorArgs([$this->jeedomHelper, $this->honeywellProxy])        
+        $this->target = $this->getMockBuilder(UserSessionManager::class)
+        ->setConstructorArgs([$this->jeedomHelper, $this->honeywellProxy])
         ->setMethods([
             "retrieveUser"
         ])
@@ -73,7 +73,8 @@ class UserSessionManagerTest extends TestCase
         ->willReturn($session);
     }
 
-    private function setUserId($userId){
+    private function setUserId($userId)
+    {
         $userInfo = new \stdClass();
         @$userInfo->userId = $userId;
         $this->honeywellProxy->method('retrieveUser')
@@ -96,7 +97,7 @@ class UserSessionManagerTest extends TestCase
         $this->assertEquals($sessionId, $returnSessionId);
     }
 
-    public function testWhenRetrieveSessionIdAndUserAndPwdExistAndUserIDStoredInConfNotSameItShouldOpenASessionAndStoreUserID()
+    public function testWhenRetrieveSessionIdAndUserAndPwdExistAndUserIDStoredInConfNotSameStoreUserID()
     {
         $this->setUsernameAndPasswordAndUserId('xxx', '1234', "4321");
         $sessionId = 'yyyy';

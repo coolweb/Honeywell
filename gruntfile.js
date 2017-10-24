@@ -23,7 +23,8 @@ module.exports = function (grunt) {
             },
             options: {
                 bin: 'vendor/bin/phpunit',
-                colors: true
+                colors: true,
+                configuration: 'test/phpunit.xml'
             }
         },
         phplint: {
