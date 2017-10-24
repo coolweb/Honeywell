@@ -74,10 +74,33 @@ class HoneywellManager
     /**
      * Retrieve all zones for current location
      * Read locationId plugin configuration
-     * @return [zone[]] The loaded zones
+     * @return [JeedomThermostaticValve[]] The loaded valves
      */
-    public function retrieveZones()
+    public function retrieveValves()
     {
+        $this->jeedomHelper->logInfo("Retrieve zones from honeywell server...");
+
+        $locationId = $this->jeedomHelper->loadPluginConfiguration("locationId");
+        if (empty($locationId)) {
+            $errorMessage = "No location id in configuration, unable to retrieve zones";
+            $this->jeedomHelper->logError($errorMessage);
+            throw new \Exception($errorMessage);
+        }
+
+        $apiZones = $this->honeywellProxy->retrieveZones($locationId);
+        $result = [];
+
+        foreach ($apiZones as $apiZone) {
+            $valve = new JeedomThermostaticValve();
+            $valve->honeywellId = $apiZone->zoneId;
+            $valve->name = $apiZone->name;
+            $valve->indoorTemperature = $apiZone->temperatureStatus->temperature;
+            $valve->wantedTemperature = $apiZone->heatSetpointStatus->targetTemperature;
+
+            \array_push($result, $valve);
+        }
+
+        return $result;
     }
     
     /**

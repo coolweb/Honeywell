@@ -14,4 +14,10 @@ class Zone
     
     /** @var string */
     public $name;
+
+    /** @var coolweb\honeywell\apiContract\TemperatureStatus */
+    public $temperatureStatus;
+
+    /** @var coolweb\honeywell\apiContract\HeatSetpointStatus */
+    public $heatSetpointStatus;
 }

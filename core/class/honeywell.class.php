@@ -32,7 +32,7 @@ class honeywell extends eqLogic
     /*
     * Fonction exécutée automatiquement toutes les minutes par Jeedom
     */
-    public static function cron()
+    public static function cron15()
     {
         $container = DI\ContainerBuilder::buildDevContainer();
         
@@ -42,39 +42,36 @@ class honeywell extends eqLogic
         $jeedomHelper = $container->get("JeedomHelper");
         $honeywellManager = $container->get("HoneywellManager");
         
-        $jeedomHelper->logDebug("Cron start, retrieve locations");
-        // todo: load zones with other method from postman, locationId is stored in plugin configuration
-        $locations = $honeywellManager->retrieveLocations();
+        $jeedomHelper->logDebug("Cron start, retrieve valves");
+        $valves = $honeywellManager->retrieveValves();
             
-        if ($locations == null) {
-            $jeedomHelper->logError("Honeywell plugin class - cron, unable to get locations, " .
+        if ($valves == null) {
+            $jeedomHelper->logError("Honeywell plugin class - cron, unable to get valves, " .
             "check user and password account");
         }
         
         $eqLogics = $jeedomHelper->loadEqLogic();
         
         foreach ($eqLogics as $eqLogic) {
-            foreach ($locations as $location) {
-                foreach ($location->valves as $valve) {
-                    if ($eqLogic->getLogicalId() == $valve->honeywellId) {
-                        $jeedomHelper->logDebug("Found valve " . $valve->name . " into jeedom, update values...");
-                        $changed = false;
+            foreach ($valves as $valve) {
+                if ($eqLogic->getLogicalId() == $valve->honeywellId) {
+                    $jeedomHelper->logDebug("Found valve " . $valve->name . " into jeedom, update values...");
+                    $changed = false;
                         
-                        $changed = $eqLogic->checkAndUpdateCmd(
+                    $changed = $eqLogic->checkAndUpdateCmd(
                             "temperature",
                             $valve->indoorTemperature
                         )
                             || $changed;
                             
-                        $changed = $eqLogic->checkAndUpdateCmd(
+                    $changed = $eqLogic->checkAndUpdateCmd(
                             "wantedTemperature",
                             $valve->wantedTemperature
                         )
                             || $changed;
                         
-                        if ($changed) {
-                            $jeedomHelper->clearCacheAndUpdateWidget($eqLogic);
-                        }
+                    if ($changed) {
+                        $jeedomHelper->clearCacheAndUpdateWidget($eqLogic);
                     }
                 }
             }

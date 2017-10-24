@@ -12,6 +12,8 @@ use coolweb\honeywell\apiContract\Location;
 use coolweb\honeywell\apiContract\Zone;
 use coolweb\honeywell\apiContract\Gateway;
 use coolweb\honeywell\apiContract\TemperatureControlSystem;
+use coolweb\honeywell\apiContract\TemperatureStatus;
+use coolweb\honeywell\apiContract\HeatSetpointStatus;
 
 class HoneywellManagerTest extends TestCase
 {
@@ -38,7 +40,8 @@ class HoneywellManagerTest extends TestCase
 
         $this->honeylwellProxy = $this->getMockBuilder(HoneywellProxyV1::class)
         ->setMethods([
-        'retrieveLocations'])
+        "retrieveLocations",
+        "retrieveZones"])
         ->disableOriginalConstructor()
         ->getMock();
 
@@ -62,6 +65,13 @@ class HoneywellManagerTest extends TestCase
         );
     }
 
+    private function setLocationIdInConfiguration($locationId)
+    {
+        $this->jeedomHelper
+        ->method("loadPluginConfiguration")
+        ->willReturn($locationId);
+    }
+
     private function setSessionId($sessionId)
     {
         $this->userSessionManager
@@ -74,6 +84,13 @@ class HoneywellManagerTest extends TestCase
         $this->honeylwellProxy
         ->method('retrieveLocations')
         ->willReturn($locations);
+    }
+    
+    private function setZones($zones)
+    {
+        $this->honeylwellProxy
+        ->method("retrieveZones")
+        ->willReturn($zones);
     }
 
     private function setLogicalIdInJeedom($logicalId, $logicalId2 = null)
@@ -188,7 +205,7 @@ class HoneywellManagerTest extends TestCase
         ->expects($this->exactly(5))
         ->method('createCmd');
 
-        $this->target->cCreateCommandForValve($eqLogic, $valve);
+        $this->target->CreateCommandForValve($eqLogic, $valve);
     }
 
     public function testCreateCommandsForLocationShouldCreateCommands()
@@ -238,5 +255,33 @@ class HoneywellManagerTest extends TestCase
     {
         $result = $this->target->temperatureDown("xxx", 19.5);
         $this->assertEquals(19, $result);
+    }
+
+    public function testRetrieveValvesWhenRetrieveShouldReturnZones()
+    {
+        $zone1 = new Zone();
+        $zone1->zoneId = 1;
+        $tempStatus = new TemperatureStatus();
+        $tempStatus->temperature = 19;
+        $zone1->temperatureStatus = $tempStatus;
+        $heatSetpoint = new HeatSetpointStatus();
+        $heatSetpoint->targetTemperature = 20;
+        $zone1->heatSetpointStatus = $heatSetpoint;
+
+        $this->setZones([$zone1]);
+        $this->setLocationIdInConfiguration("1234");
+
+        $result = $this->target->retrieveValves();
+
+        $this->assertEquals(1, \sizeof($result));
+    }
+
+    public function testWhenRetrieveValvesNoLocationIdInConfigItShouldThrowAnException()
+    {
+        $this->setZones([]);
+
+        $this->expectException(\Exception::class);
+
+        $result = $this->target->retrieveValves();
     }
 }
