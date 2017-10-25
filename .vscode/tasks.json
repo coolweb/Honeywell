@@ -15,6 +15,9 @@
         },
         {
             "taskName": "clean"
+        },
+        {
+            "taskName": "update"
         }
     ]
 }

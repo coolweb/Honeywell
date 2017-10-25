@@ -68,11 +68,16 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-composer');
 
     grunt.registerTask('default', ['']);
+    grunt.registerTask('update', 
+    ['phplint', 
+    'phpcs', 
+    'copy:main',
+    'clean:vendor']);
     grunt.registerTask('make', 
     ['clean:build', 
     'phplint', 
     'phpcs', 
-    'copy', 
+    'copy:main', 
     'composer:production:install',
     'copy:vendor',
     'clean:vendor']);
