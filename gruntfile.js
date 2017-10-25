@@ -8,15 +8,19 @@ module.exports = function (grunt) {
                     { expand: true, src: ['desktop/**'], dest: 'dist/' },
                     { expand: true, src: ['doc/**'], dest: 'dist/' },
                     { expand: true, src: ['plugin_info/**'], dest: 'dist/' },
-                    { expand: true, cwd: 'vendor/psr/', src: ['**'], dest: 'dist/3rparty/psr/' },
-                    { expand: true, cwd: 'vendor/container-interop/', src: ['**'], dest: 'dist/3rparty/container-interop/' },
-                    { expand: true, cwd: 'vendor/php-di/', src: ['**'], dest: 'dist/3rparty/php-di/' },
-                    { expand: true, cwd: 'vendor/', src: ['autoload.php'], dest: 'dist/3rparty/' },
-                    { expand: true, cwd: 'vendor/composer/', src: ['**'], dest: 'dist/3rparty/composer' }
+                    { expand: true, src: ['composer.json'], dest: 'dist/' }
+                ]
+            },
+            vendor: {
+                files: [
+                    { expand: true, cwd:'dist/vendor/', src: ['**'], dest: 'dist/3rparty/' }                
                 ]
             }
         },
-        clean: ['dist'],
+        clean:{
+            build:['dist'],
+            vendor:['dist/vendor', 'dist/composer.json', 'dist/composer.lock']
+        },
         phpunit: {
             classes: {
                 dir: 'test'
@@ -45,6 +49,14 @@ module.exports = function (grunt) {
                 bin: 'vendor/bin/phpcs',
                 standard: 'PSR2'
             }
+        },
+        composer : {
+            production: {
+                options : {
+                    flags: ['no-dev'],
+                    cwd: 'dist'
+                }
+            }
         }
     });
 
@@ -53,7 +65,15 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-phpunit');
     grunt.loadNpmTasks('grunt-phplint');
     grunt.loadNpmTasks('grunt-phpcs');
+    grunt.loadNpmTasks('grunt-composer');
 
     grunt.registerTask('default', ['']);
-    grunt.registerTask('make', ['clean', 'phplint', 'phpcs', 'copy'])
+    grunt.registerTask('make', 
+    ['clean:build', 
+    'phplint', 
+    'phpcs', 
+    'copy', 
+    'composer:production:install',
+    'copy:vendor',
+    'clean:vendor']);
 };
