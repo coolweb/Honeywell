@@ -45,7 +45,8 @@ class HoneywellProxyV1
             if (!empty($this->sessionId)) {
                 $headers = ["Authorization: bearer " . $this->sessionId,
                 "applicationId: " . $this->appId,
-                "Accept: application/json, application/xml, text/json, text/x-json, text/javascript, text/xml"];
+                "Accept: application/json, application/xml, text/json, text/x-json, text/javascript, text/xml",
+                "Content-Type: application/json"];
             }
         }
         
@@ -193,22 +194,41 @@ class HoneywellProxyV1
     */
     public function changeTemperature($sessionId, $deviceId, $temperature, $status = "Hold", $nextTime = null)
     {
-        $temperatureUrl = $this->honeywellApiUrl . "/devices/" .
-                $deviceId . "/thermostat/changeableValues/heatSetpoint";
-        $header = ["sessionId: " . $sessionId ,
-                "Content-Type: application/json"];
+        $this->sessionId = $sessionId;
+
+        $temperatureUrl = $this->honeywellApiUrl . "/temperatureZone/" .
+                $deviceId . "/heatSetpoint";
                 
         $data = new \stdClass();
-        @$data->Value = $temperature;
-        @$data->Status = $status;
-                
-        if ($nextTime !== null) {
-            @$data->NextTime = date_format($nextTime, "Y-m-d")."T".date_format($nextTime, "H:i:s")."Z";
-        } else {
-            @$data->NextTime = null;
+        @$data->heatSetpointValue = $temperature;
+
+        switch ($status) {
+            case "Hold":
+                @$data->setpointMode = "PermanentOverride";
+                break;
+
+            case "Temporary":
+                @$data->setpointMode = "TemporaryOverride";
+                break;
+
+            case "Scheduled":
+                @$data->setpointMode = "FollowSchedule";
+                break;
+            
+            default:
+                $this->jeedomHelper->logWarning("Change temperature received with unknow status:" . $status);
+                $this->jeedomHelper->logWarning("Set status to permanent by default");
+                @$data->setpointMode = "PermanentOverride";
+                break;
         }
                 
-        $result = $this->doJsonCall($temperatureUrl, json_encode($data), "PUT", $header);
+        if ($nextTime !== null) {
+            @$data->timeUntil = date_format($nextTime, "Y-m-d")."T".date_format($nextTime, "H:i:s")."Z";
+        } else {
+            @$data->timeUntil = null;
+        }
+                
+        $result = $this->doJsonCall($temperatureUrl, json_encode($data), "PUT");
         if (is_string($result) === false) {
             $this->jeedomHelper->logWarning("No task id retrieved change temperature no executed");
         } else {
