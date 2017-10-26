@@ -247,14 +247,27 @@ class HoneywellProxyV1
     */
     public function setLocationQuickAction($sessionId, $locationId, $action, $nextTime = null)
     {
-        $quickActionUrl = $this->honeywellApiUrl . "/evoTouchSystems?locationId="
-                . $locationId;
-        $header = ["sessionId: " . $sessionId ,
-                "Content-Type: application/json"];
+        $systemId = $this->jeedomHelper->loadPluginConfiguration("systemId");
+        if (empty($systemId)) {
+            $errorMsg = "No system id in plugin configuration, unable to set location quick action";
+            $this->jeedomHelper->logError($errorMsg);
+            throw new \Exception($errorMsg);
+        }
+
+        $this->sessionId = $sessionId;
+        $quickActionUrl = $this->honeywellApiUrl . "/temperatureControlSystem/"
+                . $systemId . "/mode";
                 
         $data = new \stdClass();
-        @$data->QuickAction = $action;
-        @$data->QuickActionNextTime = $nextTime;
+        @$data->systemMode = $action;
+
+        if ($nextTime !== null) {
+            @$data->timeUntil = date_format($nextTime, "Y-m-d")."T".date_format($nextTime, "H:i:s")."Z";
+        } else {
+            @$data->timeUntil = null;
+        }
+
+        @$data->permanent = \is_null($nextTime) ? true : false;
                 
         $this->doJsonCall($quickActionUrl, json_encode($data), "PUT", $header);
     }

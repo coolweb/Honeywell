@@ -23,7 +23,7 @@ class HoneywellManagerTest extends TestCase
     /** @var HoneywellProxy */
     private $honeylwellProxy;
 
-    /** @var JeedomHelper */
+    /** @var \PHPUnit_Framework_MockObject_MockObject */
     private $jeedomHelper;
 
     /** @var HoneywellManager */
@@ -128,6 +128,7 @@ class HoneywellManagerTest extends TestCase
         $valve1->zoneId = 666;
         $valve1->modelType = 'HeatingZone';
         $temperatureSys = new TemperatureControlSystem();
+        $temperatureSys->systemId = 999;
         $gateway = new Gateway();
 
         array_push($loc1->gateways, $gateway);
@@ -144,9 +145,12 @@ class HoneywellManagerTest extends TestCase
         $this->setLocations($locations);
 
         $this->jeedomHelper
-        ->expects($this->once())
+        ->expects($this->exactly(2))
         ->method('savePluginConfiguration')
-        ->with($this->equalTo('locationId'), $this->equalTo('123'));
+        ->withConsecutive(
+            [$this->equalTo('locationId'), $this->equalTo('123')],
+            [$this->equalTo('systemId'), $this->equalTo(999)]
+        );
 
         $result = $this->target->retrieveLocations();
         

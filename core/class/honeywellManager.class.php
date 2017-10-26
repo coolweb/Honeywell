@@ -26,6 +26,7 @@ class HoneywellManager
     
     /**
     * Retrieve all locations with attached devices and values
+    * Save the location id and system id into plugin configuration
     * @return JeedomLocation[] null if unable to login
     */
     public function retrieveLocations()
@@ -50,6 +51,8 @@ class HoneywellManager
 
             foreach ($location->gateways as $gateway) {
                 foreach ($gateway->temperatureControlSystems as $temperatureSys) {
+                    $this->jeedomHelper->savePluginConfiguration("systemId", $temperatureSys->systemId);
+            
                     foreach ($temperatureSys->zones as $zone) {
                         if ($zone->modelType == "HeatingZone") {
                             $valve = new JeedomThermostaticValve();
