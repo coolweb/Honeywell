@@ -5,7 +5,7 @@ class JeedomHelper
 {
     public function loadPluginConfiguration($key)
     {
-        return config::byKey($key, "honeywell");
+        return \config::byKey($key, "honeywell");
     }
     
     /**
@@ -15,7 +15,7 @@ class JeedomHelper
     */
     public function savePluginConfiguration($key, $value)
     {
-        config::save($key, $value, "honeywell");
+        \config::save($key, $value, "honeywell");
     }
     
     /**
@@ -24,7 +24,7 @@ class JeedomHelper
     */
     public function logDebug($message)
     {
-        log::add("honeywell", "debug", $message);
+        \log::add("honeywell", "debug", $message);
     }
     
     /**
@@ -33,7 +33,7 @@ class JeedomHelper
     */
     public function logError($message)
     {
-        log::add("honeywell", "error", $message);
+        \log::add("honeywell", "error", $message);
     }
     
     /**
@@ -42,7 +42,7 @@ class JeedomHelper
     */
     public function logInfo($message)
     {
-        log::add("honeywell", "info", $message);
+        \log::add("honeywell", "info", $message);
     }
     
     /**
@@ -51,7 +51,7 @@ class JeedomHelper
     */
     public function logWarning($message)
     {
-        log::add("honeywell", "warning", $message);
+        \log::add("honeywell", "warning", $message);
     }
     
     /**
@@ -60,7 +60,7 @@ class JeedomHelper
     */
     public function getEqLogicByLogicalId($logicalId)
     {
-        return eqLogic::byLogicalId($logicalId, "honeywell");
+        return \eqLogic::byLogicalId($logicalId, "honeywell");
     }
 
     /**
@@ -70,7 +70,7 @@ class JeedomHelper
      */
     public function loadEqLogic()
     {
-        return eqLogic::byType("honeywell");
+        return \eqLogic::byType("honeywell");
     }
     
     /**
@@ -82,7 +82,7 @@ class JeedomHelper
     */
     public function createAndSaveEqLogic($logicalId, $name, $configurationKeyValue)
     {
-        $eqLogic = new eqLogic();
+        $eqLogic = new \eqLogic();
         $eqLogic->setLogicalId($logicalId);
         $eqLogic->setEqType_name("honeywell");
         $eqLogic->setIsVisible(1);
@@ -139,9 +139,9 @@ class JeedomHelper
 
     public function clearCacheAndUpdateWidget($eqLogic)
     {
-        $mc = cache::byKey("honeywellWidgetmobile" . $eqLogic->getId());
+        $mc = \cache::byKey("honeywellWidgetmobile" . $eqLogic->getId());
         $mc->remove();
-        $mc = cache::byKey("honeywellWidgetdashboard" . $eqLogic->getId());
+        $mc = \cache::byKey("honeywellWidgetdashboard" . $eqLogic->getId());
         $mc->remove();
         $eqLogic->toHtml("mobile");
         $eqLogic->toHtml("dashboard");

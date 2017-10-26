@@ -39,8 +39,8 @@ class honeywell extends eqLogic
         /**
         * @var JeedomHelper
         */
-        $jeedomHelper = $container->get("JeedomHelper");
-        $honeywellManager = $container->get("HoneywellManager");
+        $jeedomHelper = $container->get("coolweb\honeywell\JeedomHelper");
+        $honeywellManager = $container->get("coolweb\honeywell\HoneywellManager");
         
         $jeedomHelper->logDebug("Cron start, retrieve valves");
         $valves = $honeywellManager->retrieveValves();
@@ -182,8 +182,8 @@ class honeywell extends eqLogic
     {
         $container = DI\ContainerBuilder::buildDevContainer();
         
-        $jeedomHelper = $container->get("JeedomHelper");
-        $honeywellManager = $container->get("HoneywellManager");
+        $jeedomHelper = $container->get("coolweb\honeywell\JeedomHelper");
+        $honeywellManager = $container->get("coolweb\honeywell\HoneywellManager");
         
         $jeedomHelper->logDebug("Honeywell plugin: sync devices...");
         $jeedomHelper->logInfo("Getting devices from honeywell");
@@ -242,8 +242,8 @@ class honeywellCmd extends cmd
     {
         $container = DI\ContainerBuilder::buildDevContainer();
         
-        $jeedomHelper = $container->get("JeedomHelper");
-        $honeywellManager = $container->get("HoneywellManager");
+        $jeedomHelper = $container->get("coolweb\honeywell\JeedomHelper");
+        $honeywellManager = $container->get("coolweb\honeywell\HoneywellManager");
         
         if ($this->getType() == "info") {
             return;

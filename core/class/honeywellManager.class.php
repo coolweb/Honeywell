@@ -80,6 +80,13 @@ class HoneywellManager
     {
         $this->jeedomHelper->logInfo("Retrieve zones from honeywell server...");
 
+        $sessionId = $this->userSessionManager->retrieveSessionId();
+        if ($sessionId == null) {
+            $this->jeedomHelper->logWarning("Retrieving valves:" .
+            "No session id retrieved, probably bad user/password");
+            return null;
+        }
+
         $locationId = $this->jeedomHelper->loadPluginConfiguration("locationId");
         if (empty($locationId)) {
             $errorMessage = "No location id in configuration, unable to retrieve zones";

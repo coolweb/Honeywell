@@ -29,12 +29,13 @@ require_once dirname(__FILE__) . '/../class/apiContract/locationInfo.class.php';
 require_once dirname(__FILE__) . '/../class/apiContract/gateway.class.php';
 require_once dirname(__FILE__) . '/../class/apiContract/temperatureControlSystem.class.php';
 require_once dirname(__FILE__) . '/../class/apiContract/zone.class.php';
+require_once dirname(__FILE__) . '/../class/apiContract/temperatureStatus.class.php';
+require_once dirname(__FILE__) . '/../class/apiContract/heatSetpointStatus.class.php';
 
 require_once dirname(__FILE__) . '/../class/jeedomThermostaticValve.class.php';
 require_once dirname(__FILE__) . '/../class/jeedomLocation.class.php';
 
 require_once dirname(__FILE__) . '/../class/jeedomHelper.class.php';
-require_once dirname(__FILE__) . '/../class/honeywellProxy.class.php';
 require_once dirname(__FILE__) . '/../class/honeywellProxyV1.class.php';
 
 require_once dirname(__FILE__) . '/../class/userSessionManager.class.php';

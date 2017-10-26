@@ -268,6 +268,8 @@ class HoneywellManagerTest extends TestCase
         $heatSetpoint->targetTemperature = 20;
         $zone1->heatSetpointStatus = $heatSetpoint;
 
+        $this->setSessionId('1234');
+        
         $this->setZones([$zone1]);
         $this->setLocationIdInConfiguration("1234");
 
@@ -278,6 +280,8 @@ class HoneywellManagerTest extends TestCase
 
     public function testWhenRetrieveValvesNoLocationIdInConfigItShouldThrowAnException()
     {
+        $this->setSessionId('1234');
+        
         $this->setZones([]);
 
         $this->expectException(\Exception::class);
