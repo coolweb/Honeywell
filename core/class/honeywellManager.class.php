@@ -244,7 +244,7 @@ class HoneywellManager
     {
         $this->jeedomHelper->logDebug("HoneywellManager - createCommandsForLocation: start");
         $this->jeedomHelper->logDebug("HoneywellManager - createCommandsForLocation:" .
-        "Create quick action auto cmd for " . $location->name);
+        "Create auto cmd for " . $location->name);
             
         $this->jeedomHelper->createCmd(
             $eqLogic,
@@ -256,7 +256,7 @@ class HoneywellManager
         );
         
         $this->jeedomHelper->logDebug("HoneywellManager - createCommandsForLocation:" .
-        "Create quick action custom cmd for " . $location->name);
+        "Create custom cmd for " . $location->name);
         $this->jeedomHelper->createCmd(
             $eqLogic,
             "Custom",
@@ -267,7 +267,7 @@ class HoneywellManager
         );
         
         $this->jeedomHelper->logDebug("HoneywellManager - createCommandsForLocation:" .
-        "Create quick action eco cmd for " . $location->name);
+        "Create auto with eco cmd for " . $location->name);
         $this->jeedomHelper->createCmd(
             $eqLogic,
             "AutoWithEco",
@@ -278,7 +278,7 @@ class HoneywellManager
         );
         
         $this->jeedomHelper->logDebug("HoneywellManager - createCommandsForLocation:" .
-        "Create quick action away cmd for " . $location->name);
+        "Create away cmd for " . $location->name);
         $this->jeedomHelper->createCmd(
             $eqLogic,
             "Away",
@@ -289,7 +289,7 @@ class HoneywellManager
         );
         
         $this->jeedomHelper->logDebug("HoneywellManager - createCommandsForLocation:" .
-        "Create quick action day off cmd for " . $location->name);
+        "Create day off cmd for " . $location->name);
         $this->jeedomHelper->createCmd(
             $eqLogic,
             "DayOff",
@@ -300,13 +300,24 @@ class HoneywellManager
         );
         
         $this->jeedomHelper->logDebug("HoneywellManager - createCommandsForLocation:" .
-        "Create quick action heating off cmd for " . $location->name);
+        "Create heating off cmd for " . $location->name);
         $this->jeedomHelper->createCmd(
             $eqLogic,
             "HeatingOff",
             __("Chauffage Off", __FILE__),
             "action",
             "other",
+            true
+        );
+
+        $this->jeedomHelper->logDebug("HoneywellManager - createCommandsForLocation:" .
+        "Create current mode cmd for " . $location->name);
+        $this->jeedomHelper->createCmd(
+            $eqLogic,
+            "Mode",
+            __("Mode", __FILE__),
+            "info",
+            "string",
             true
         );
         
@@ -424,12 +435,36 @@ class HoneywellManager
         $sessionId = $this->userSessionManager->retrieveSessionId();
         if ($sessionId == null) {
             $this->jeedomHelper->logWarning(
-                "Retrieving locations: No session id retrieved, probably bad user/password"
+                "Set quick action: No session id retrieved, probably bad user/password"
             );
             return null;
         }
 
         $this->honeywellProxy->setLocationQuickAction($sessionId, $locationId, $mode, $until);
+    }
+
+    /**
+     * Retrieve the actual quick action of the system
+     *
+     * @return JeedomTemperatureSystem The system
+     */
+    public function getQuickAction()
+    {
+        $sessionId = $this->userSessionManager->retrieveSessionId();
+        if ($sessionId == null) {
+            $this->jeedomHelper->logWarning(
+                "Get quick action: No session id retrieved, probably bad user/password"
+            );
+            return null;
+        }
+
+        $quickActionResponse = $this->honeywellProxy->getLocationQuickAction();
+
+        $tempSystem = new JeedomTemperatureSystem();
+        $tempSystem->mode = $quickActionResponse->Mode;
+        $tempSystem->honeywellId = $this->jeedomHelper->loadPluginConfiguration("systemId");
+
+        return $tempSystem;
     }
 
     /**

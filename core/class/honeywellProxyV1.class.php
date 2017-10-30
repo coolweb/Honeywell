@@ -254,7 +254,6 @@ class HoneywellProxyV1
             throw new \Exception($errorMsg);
         }
 
-        $this->sessionId = $sessionId;
         $quickActionUrl = $this->honeywellApiUrl . "/temperatureControlSystem/"
                 . $systemId . "/mode";
                 
@@ -269,6 +268,28 @@ class HoneywellProxyV1
 
         @$data->permanent = \is_null($nextTime) ? true : false;
                 
-        $this->doJsonCall($quickActionUrl, json_encode($data), "PUT", $header);
+        $this->doJsonCall($quickActionUrl, json_encode($data), "PUT");
+    }
+
+    /**
+     * Retrieve the actual quick action of the system
+     *
+     * @return void
+     */
+    public function getLocationQuickAction()
+    {
+        $systemId = $this->jeedomHelper->loadPluginConfiguration("systemId");
+        if (empty($systemId)) {
+            $errorMsg = "No system id in plugin configuration, unable to get location quick action";
+            $this->jeedomHelper->logError($errorMsg);
+            throw new \Exception($errorMsg);
+        }
+
+        $quickActionUrl = $this->honeywellApiUrl . "/temperatureControlSystem/"
+                . $systemId . "/status";
+
+        $this->doJsonCall($quickActionUrl, null, "GET");
+
+        return $result[1];
     }
 }

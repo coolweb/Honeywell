@@ -32,6 +32,7 @@ require_once dirname(__FILE__) . '/../class/apiContract/zone.class.php';
 require_once dirname(__FILE__) . '/../class/apiContract/temperatureStatus.class.php';
 require_once dirname(__FILE__) . '/../class/apiContract/heatSetpointStatus.class.php';
 
+require_once dirname(__FILE__) . '/../class/jeedomTemperatureSystem.class.php';
 require_once dirname(__FILE__) . '/../class/jeedomThermostaticValve.class.php';
 require_once dirname(__FILE__) . '/../class/jeedomLocation.class.php';
 

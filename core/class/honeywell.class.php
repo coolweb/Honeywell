@@ -50,9 +50,32 @@ class honeywell extends eqLogic
             "check user and password account");
         }
         
+        $jeedomHelper->logDebug("Retrieve temperature system status");
+        $temperatureSystem = $honeywellManager->getQuickAction();
+
+        if ($temperatureSystem == null) {
+            $jeedomHelper->logError("Honeywell plugin class - cron, unable to get temperature system status, " .
+            "check user and password account");
+        }
+
         $eqLogics = $jeedomHelper->loadEqLogic();
         
         foreach ($eqLogics as $eqLogic) {
+            if ($eqLogic->getLogicalId() == $temperatureSystem->honeywellId) {
+                $jeedomHelper->logDebug("Found temperature system into jeedom, update values...");
+                $changed = false;
+
+                $changed = $eqLogic->checkAndUpdateCmd(
+                    "Mode",
+                    $temperatureSystem->mode
+                )
+                    || $changed;
+
+                if ($changed) {
+                    $jeedomHelper->clearCacheAndUpdateWidget($eqLogic);
+                }
+            }
+
             foreach ($valves as $valve) {
                 if ($eqLogic->getLogicalId() == $valve->honeywellId) {
                     $jeedomHelper->logDebug("Found valve " . $valve->name . " into jeedom, update values...");
