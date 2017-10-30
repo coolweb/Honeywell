@@ -43,31 +43,30 @@ class honeywell extends eqLogic
         $honeywellManager = $container->get("coolweb\honeywell\HoneywellManager");
         
         $jeedomHelper->logDebug("Cron start, retrieve valves");
-        $valves = $honeywellManager->retrieveValves();
+        $systemStatus = $honeywellManager->retrieveTemperatureSystem();
+
+        if ($systemStatus == null) {
+            $jeedomHelper->logError("Unable to retrieve temperature system status");
+            return;
+        }
+
+        $valves = $systemStatus->valves;
             
         if ($valves == null) {
             $jeedomHelper->logError("Honeywell plugin class - cron, unable to get valves, " .
             "check user and password account");
         }
         
-        $jeedomHelper->logDebug("Retrieve temperature system status");
-        $temperatureSystem = $honeywellManager->getQuickAction();
-
-        if ($temperatureSystem == null) {
-            $jeedomHelper->logError("Honeywell plugin class - cron, unable to get temperature system status, " .
-            "check user and password account");
-        }
-
         $eqLogics = $jeedomHelper->loadEqLogic();
         
         foreach ($eqLogics as $eqLogic) {
-            if ($eqLogic->getLogicalId() == $temperatureSystem->honeywellId) {
+            if ($eqLogic->getLogicalId() == $systemStatus->honeywellId) {
                 $jeedomHelper->logDebug("Found temperature system into jeedom, update values...");
                 $changed = false;
 
                 $changed = $eqLogic->checkAndUpdateCmd(
                     "Mode",
-                    $temperatureSystem->mode
+                    $systemStatus->mode
                 )
                     || $changed;
 
@@ -100,8 +99,6 @@ class honeywell extends eqLogic
             }
         }
     }
-    
-    
     
     /*
     * Fonction exécutée automatiquement toutes les heures par Jeedom

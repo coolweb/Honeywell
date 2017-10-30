@@ -77,7 +77,7 @@ class HoneywellManager
     /**
      * Retrieve all zones for current location
      * Read locationId plugin configuration
-     * @return [JeedomThermostaticValve[]] The loaded valves
+     * @return JeedomThermostaticValve[] The loaded valves
      */
     public function retrieveValves()
     {
@@ -109,6 +109,43 @@ class HoneywellManager
 
             \array_push($result, $valve);
         }
+
+        return $result;
+    }
+
+    /**
+     * Retrieve temperature system status, system mode with all devices
+     *
+     * @return JeedomTemperatureSystem
+     */
+    public function retrieveTemperatureSystem()
+    {
+        $this->jeedomHelper->logInfo("Retrieve temperature system status from honeywell server...");
+
+        $sessionId = $this->userSessionManager->retrieveSessionId();
+        if ($sessionId == null) {
+            $this->jeedomHelper->logWarning("Retrieving valves:" .
+            "No session id retrieved, probably bad user/password");
+            return null;
+        }
+
+        $tempSystem = $this->honeywellProxy->retrieveTemperatureSystemStatus();
+        $apiZones = $tempSystem->zones;
+        $result = new JeedomTemperatureSystem();
+
+        $this->jeedomHelper->logDebug("Number of zones retrieved: " . \sizeof($apiZones));
+
+        foreach ($apiZones as $apiZone) {
+            $valve = new JeedomThermostaticValve();
+            $valve->honeywellId = $apiZone->zoneId;
+            $valve->name = $apiZone->name;
+            $valve->indoorTemperature = $apiZone->temperatureStatus->temperature;
+            $valve->wantedTemperature = $apiZone->heatSetpointStatus->targetTemperature;
+
+            \array_push($result->valves, $valve);
+        }
+
+        $result->mode = $tempSystem->systemModeStatus->mode;
 
         return $result;
     }

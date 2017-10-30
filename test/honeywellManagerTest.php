@@ -11,8 +11,10 @@ use coolweb\honeywell\JeedomThermostaticValve;
 use coolweb\honeywell\apiContract\Location;
 use coolweb\honeywell\apiContract\Zone;
 use coolweb\honeywell\apiContract\Gateway;
+use coolweb\honeywell\apiContract\TemperatureControlSystemStatus;
 use coolweb\honeywell\apiContract\TemperatureControlSystem;
 use coolweb\honeywell\apiContract\TemperatureStatus;
+use coolweb\honeywell\apiContract\TemperatureModeStatus;
 use coolweb\honeywell\apiContract\HeatSetpointStatus;
 
 class HoneywellManagerTest extends TestCase
@@ -41,7 +43,8 @@ class HoneywellManagerTest extends TestCase
         $this->honeylwellProxy = $this->getMockBuilder(HoneywellProxyV1::class)
         ->setMethods([
         "retrieveLocations",
-        "retrieveZones"])
+        "retrieveZones",
+        "retrieveTemperatureSystemStatus"])
         ->disableOriginalConstructor()
         ->getMock();
 
@@ -93,6 +96,13 @@ class HoneywellManagerTest extends TestCase
         ->willReturn($zones);
     }
 
+    private function setTemperatureSystemStatus($tempSysStatus)
+    {
+        $this->honeylwellProxy
+        ->method("retrieveTemperatureSystemStatus")
+        ->willReturn($tempSysStatus);
+    }
+
     private function setLogicalIdInJeedom($logicalId, $logicalId2 = null)
     {
         if (isset($logicalId2)) {
@@ -116,6 +126,37 @@ class HoneywellManagerTest extends TestCase
         $result = $this->target->RetrieveLocations();
 
         $this->assertNull($result);
+    }
+
+    public function testWhenRetrieveTempSystemAndOneValveItShouldReturnSystemWithValve()
+    {
+        $sys = new TemperatureControlSystemStatus();
+        $sys->systemId = 123;
+        $valve1 = new Zone();
+        $valve1->name = 'kitchen';
+        $valve1->zoneId = 666;
+        $valve1->modelType = 'HeatingZone';
+        $tempStatus = new TemperatureStatus();
+        $tempStatus->temperature = 12;
+        $valve1->temperatureStatus = $tempStatus;
+        $heatSetpoint = new HeatSetpointStatus();
+        $heatSetpoint->targetTemperature = 15;
+        $valve1->heatSetpointStatus = $heatSetpoint;
+    
+        $sysMode = new TemperatureModeStatus();
+        $sysMode->isPermanent = false;
+        $sysMode->mode = "Away";
+        $sys->systemModeStatus = $sysMode;
+
+        array_push($sys->zones, $valve1);
+
+        $this->setSessionId('1234');
+        $this->setTemperatureSystemStatus($sys);
+
+        $result = $this->target->retrieveTemperatureSystem();
+        
+        $this->assertEquals(1, sizeof($result->valves));
+        $this->assertEquals("Away", $result->mode);
     }
 
     public function testWhenRetrieveLocationsAndOneValveItShouldReturnLocationsWithValveAndSaveLocationId()

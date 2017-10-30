@@ -182,6 +182,29 @@ class HoneywellProxyV1
                 
         return $result[1];
     }
+
+    /**
+     * Retrieve temperature system status, system mode with all devices
+     * Read system id in plugin configuration
+     *
+     * @return \coolweb\honeywell\apiContract\TemperatureControlSystemStatus
+     */
+    public function retrieveTemperatureSystemStatus()
+    {
+        $systemId = $this->jeedomHelper->loadPluginConfiguration("systemId");
+        if (empty($systemId)) {
+            $errorMsg = "No system id in plugin configuration, unable to set location quick action";
+            $this->jeedomHelper->logError($errorMsg);
+            throw new \Exception($errorMsg);
+        }
+
+        $temperatureSystemUrl = $this->honeywellApiUrl . "/temperatureControlSystem/"
+        . $systemId . "/status";
+
+        $result = $this->doJsonCall($temperatureSystemUrl, null, "GET");
+
+        return $result[1];
+    }
             
     /**
     * Change temperature for a valve

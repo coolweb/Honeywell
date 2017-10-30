@@ -8,6 +8,8 @@ include_once('./core/class/apiContract/location.class.php');
 include_once('./core/class/apiContract/session.class.php');
 include_once('./core/class/apiContract/userInfo.class.php');
 include_once('./core/class/apiContract/temperatureControlSystem.class.php');
+include_once('./core/class/apiContract/temperatureControlSystemStatus.class.php');
+include_once('./core/class/apiContract/temperatureModeStatus.class.php');
 include_once('./core/class/apiContract/zone.class.php');
 include_once('./core/class/apiContract/gateway.class.php');
 include_once('./core/class/apiContract/locationInfo.class.php');
