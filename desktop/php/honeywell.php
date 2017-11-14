@@ -33,7 +33,11 @@ foreach ($eqLogics as $eqLogic) {
     echo "<center>";
     if($eqLogic->getConfiguration('deviceType') == '128'){
         echo '<img src="plugins/honeywell/doc/images/Valve.png" height="105" />';
-    }	
+    }
+    
+    if($eqLogic->getConfiguration('deviceType') == '0'){
+        echo '<img src="plugins/honeywell/doc/images/controller.png" height="105" />';
+    }
     echo "</center>";
     echo '<span style="font-size : 1.1em;position:relative; top : 15px;word-break: break-all;white-space: pre-wrap;word-wrap: break-word;"><center>' . $eqLogic->getHumanName(true, true) . '</center></span>';
     echo '</div>';
