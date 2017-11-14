@@ -246,7 +246,7 @@ class HoneywellManager
             "ChangeTemperature",
             __("Changer température", __FILE__),
             "action",
-            "other",
+            "message",
             true
         );
         
@@ -519,11 +519,21 @@ class HoneywellManager
         $heatSetpoint = 0;
         $mode = "permanent";
         $until;
-        if (is_array($cmdOptions) && array_key_exists("heatSetpoint", $cmdOptions)) {
-            $heatSetpoint = $cmdOptions["heatSetpoint"];
-            $mode = $cmdOptions["status"];
-            if ($mode == "temporary") {
-                $until = date_create($cmdOptions["until"]);
+        if (is_array($cmdOptions)) {
+            if (array_key_exists("heatSetpoint", $cmdOptions)) {
+                $heatSetpoint = $cmdOptions["heatSetpoint"];
+                $mode = $cmdOptions["status"];
+                if ($mode == "temporary") {
+                    $until = date_create($cmdOptions["until"]);
+                }
+            }
+
+            if (array_key_exists("message", $cmdOptions)) {
+                if ($cmdOptions["message"] == "scheduled") {
+                    $mode = "scheduled";
+                } else {
+                    $heatSetpoint = $cmdOptions["message"];
+                }
             }
         } else {
             $heatSetpoint = $cmdOptions;

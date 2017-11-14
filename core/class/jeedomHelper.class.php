@@ -121,7 +121,7 @@ class JeedomHelper
     ) {
         $cmd = $eqLogic->getCmd(null, $cmdLogicalId);
         if (!is_object($cmd)) {
-            $cmd = new honeywellCmd();
+            $cmd = new \honeywellCmd();
             $cmd->setLogicalId($cmdLogicalId);
             $cmd->setName($cmdName);
 
