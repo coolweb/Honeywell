@@ -260,7 +260,7 @@ class HoneywellManagerTest extends TestCase
         $location->name = 'test';
 
         $this->jeedomHelper
-        ->expects($this->exactly(6))
+        ->expects($this->exactly(7))
         ->method('createCmd');
 
         $this->target->createCommandsForLocation($eqLogic, $location);
