@@ -5,5 +5,6 @@
     //"phpformatter.pharPath": "D:\\Tools\\phpCsFixer\\php-cs-fixer-v2.phar",
     "phpformatter.composer": true,
     "phpformatter.logging": true,
-    "files.eol": "\n"
+    "files.eol": "\n",
+    "phpcs.standard": "PSR2"
 }

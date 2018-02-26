@@ -37,18 +37,33 @@ class UserSessionManager
             throw new \Exception($message);
         }
 
-        $sessionResponse = $this->honeywellProxy->openSession($user, $password);
-        $token = $sessionResponse->access_token;
-        if (is_string($token)) {
-            $userInfo = $this->honeywellProxy->retrieveUser($token);
+        $sessionValidity = $this->jeedomHelper->loadPluginConfiguration("sessionIdValidity");
+        if($sessionValidity != ""){
+            if(time() > intval($sessionValidity)){
+                $this->jeedomHelper->logDebug("Session expired, get new token.");
 
-            if ($userInfo->userId !== $userId) {
-                $this->jeedomHelper->logDebug("New user id stored: " . $userInfo->userId);
-                $this->jeedomHelper->savePluginConfiguration("userId", $userInfo->userId);
+                $sessionResponse = $this->honeywellProxy->openSession($user, $password);
+                $token = $sessionResponse->access_token;
+                if (is_string($token)) {
+                    $userInfo = $this->honeywellProxy->retrieveUser($token);
+
+                    if ($userInfo->userId !== $userId) {
+                        $this->jeedomHelper->logDebug("New user id stored: " . $userInfo->userId);
+                        $this->jeedomHelper->savePluginConfiguration("userId", $userInfo->userId);
+                    }
+
+                    $this->jeedomHelper->savePluginConfiguration("sessionId", $sessionResponse->access_token);
+                    $this->jeedomHelper->savePluginConfiguration("sessionIdValidity", time() + (15 * 60));
+                }
+                
+                return $sessionResponse->access_token;
+            } else {
+                $this->jeedomHelper->logDebug("Session valid, use token in cache.");
+                $tokenInCache = $this->jeedomHelper->loadPluginConfiguration("sessionId");
+
+                return $tokenInCache;
             }
-        }
-        
-        return $sessionResponse->access_token;
+        }        
     }
 
     /**
