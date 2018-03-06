@@ -24,7 +24,11 @@ if (file_exists(dirname(__FILE__) . "/../../../../core/php/core.inc.php")) {
 class honeywell extends eqLogic
 {
     /*     * *************************Attributs****************************** */
-    
+    /** @var \coolweb\honeywell\JeedomHelper */
+    public static $_jeedomHelper;
+
+    /** @var \coolweb\honeywell\HoneywellManager */
+    public static $_honeywellManager;
     
     
     /*     * ***********************Methode static*************************** */
@@ -33,7 +37,7 @@ class honeywell extends eqLogic
     * Fonction exécutée automatiquement toutes les minutes par Jeedom
     */
     public static function cron15()
-    {
+    {        
         $container = DI\ContainerBuilder::buildDevContainer();
         
         /**
@@ -81,16 +85,28 @@ class honeywell extends eqLogic
                     $changed = false;
                         
                     $changed = $eqLogic->checkAndUpdateCmd(
-                            "temperature",
-                            $valve->indoorTemperature
-                        )
-                            || $changed;
+                        "temperature",
+                        $valve->indoorTemperature
+                    )
+                    || $changed;
                             
                     $changed = $eqLogic->checkAndUpdateCmd(
-                            "wantedTemperature",
-                            $valve->wantedTemperature
-                        )
-                            || $changed;
+                        "wantedTemperature",
+                        $valve->wantedTemperature
+                    )
+                    || $changed;
+
+                    $changed = $eqLogic->checkAndUpdateCmd(
+                        "mode",
+                        $valve->mode
+                    )
+                    || $changed;
+
+                    $changed = $eqLogic->checkAndUpdateCmd(
+                        "until",
+                        $valve->until == null ? "" : $valve->until->format("Y-m-d H:i:s")
+                    )
+                    || $changed;
                         
                     if ($changed) {
                         $jeedomHelper->clearCacheAndUpdateWidget($eqLogic);
@@ -203,6 +219,8 @@ class honeywell extends eqLogic
         $container = DI\ContainerBuilder::buildDevContainer();
         
         $jeedomHelper = $container->get("coolweb\honeywell\JeedomHelper");
+        $jeedomHelper->logDebug("Instantiate new objects from DI container.");
+
         $honeywellManager = $container->get("coolweb\honeywell\HoneywellManager");
         
         $jeedomHelper->logDebug("Honeywell plugin: sync devices...");

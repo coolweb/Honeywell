@@ -27,8 +27,6 @@ class UserSessionManagerTest extends TestCase
     private $userIdInCache = "";
 
     private $sessionId = "";
-    private $sessionIdInCache = "";
-    private $sessionIdValidity = "";
 
     protected function setUp()
     {
@@ -79,14 +77,6 @@ class UserSessionManagerTest extends TestCase
                 $this->userIdInCache = $value;
                 break;
 
-            case 'sessionId':
-                $this->sessionIdInCache = $value;
-                break;
-
-            case 'sessionIdValidity':
-                $this->sessionIdValidity = $value;
-                break;
-
             default:
                 break;
         }
@@ -119,12 +109,6 @@ class UserSessionManagerTest extends TestCase
             case 'userId':
                 return $this->userIdInCache;
 
-            case 'sessionIdValidity':
-                return $this->sessionIdValidity;
-
-            case 'sessionId':
-                return $this->sessionIdInCache;
-
             default:
                 return '';
         }
@@ -132,9 +116,10 @@ class UserSessionManagerTest extends TestCase
 
     public function testWhenRetrieveSessionIdAndUserAndPasswordExistAndNoUserIDStoredInConfItShouldOpenASession()
     {
+        UserSessionManager::$sessionValidity = "";
+
         $this->user = "xxx";
         $this->password = "1234";
-        $this->userIdInCache = "1234";
 
         $this->sessionId = "yyyy";
         $this->userId = "1234";
@@ -143,12 +128,13 @@ class UserSessionManagerTest extends TestCase
 
         $returnSessionId = $this->target->retrieveSessionId();
 
-        $this->assertEquals($this->sessionId, $returnSessionId);
-        $this->assertEquals($this->sessionIdInCache, $returnSessionId);
+        $this->assertEquals("yyyy", $returnSessionId);
     }
 
     public function testWhenRetrieveSessionIdAndUserAndPwdExistAndUserIDStoredInConfNotSameStoreUserID()
     {
+        UserSessionManager::$sessionValidity = "";
+
         $this->user = "xxx";
         $this->password = "1234";
         $this->userIdInCache = "4321";
@@ -166,63 +152,10 @@ class UserSessionManagerTest extends TestCase
 
     public function testWhenRetrieveSessionIdAndUserNotSetItShouldThrowAnError()
     {
+        UserSessionManager::$sessionValidity = "";
+        
         $this->expectException(\Exception::class);
 
         $this->target->retrieveSessionId();
-    }
-
-    public function testWhenNoSessionIdValidityItShouldOpenNewSession()
-    {
-        $this->user = "456";
-        $this->password = "1234";
-        $this->userIdInCache = "456";
-
-        $this->sessionId = "yyyy";
-        $this->userId  = "456";
-        
-        $this->setupContext();
-
-        $returnSessionId = $this->target->retrieveSessionId();
-
-        $this->assertEquals($this->sessionId, $returnSessionId);
-        $this->assertEquals($this->userIdInCache, "456");
-    }
-
-    public function testWhenSessionIdValidityExpiredItShouldOpenNewSession()
-    {
-        $this->user = "456";
-        $this->password = "1234";
-        $this->userIdInCache = "456";
-        $this->sessionIdInCache = "xxx";
-
-        $this->sessionId = "yyyy";
-        $this->userId  = "456";
-        $this->sessionIdValidity = time() - 60;
-        
-        $this->setupContext();
-
-        $returnSessionId = $this->target->retrieveSessionId();
-
-        $this->assertEquals("yyyy", $returnSessionId);
-        $this->assertEquals($this->userIdInCache, "456");
-    }
-
-    public function testWhenSessionIdValidityIsNotExpiredItShouldReturnSessionIdInCache()
-    {
-        $this->user = "456";
-        $this->password = "1234";
-        $this->userIdInCache = "456";
-        $this->sessionIdInCache = "xxx";
-
-        $this->sessionId = "yyyy";
-        $this->userId  = "456";
-        $this->sessionIdValidity = time() + 60;
-        
-        $this->setupContext();
-
-        $returnSessionId = $this->target->retrieveSessionId();
-
-        $this->assertEquals("xxx", $returnSessionId);
-        $this->assertEquals($this->userIdInCache, "456");
     }
 }

@@ -137,6 +137,19 @@ class JeedomHelper
         }
     }
 
+
+    /**
+     * Retrieve a commnand by logical name.
+     *
+     * @param Object $eqLogic Equipment owning the command.
+     * @param String $cmdName The name of the command.
+     * @return Object The command.
+     */
+    public function getCmd($eqLogic, $cmdName)
+    {
+        return $eqLogic->getCmd(null, $cmdName);
+    }
+
     public function clearCacheAndUpdateWidget($eqLogic)
     {
         $mc = \cache::byKey("honeywellWidgetmobile" . $eqLogic->getId());
