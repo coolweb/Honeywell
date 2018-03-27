@@ -120,7 +120,10 @@ class JeedomHelper
         $unite = "°C"
     ) {
         $cmd = $eqLogic->getCmd(null, $cmdLogicalId);
-        if (!is_object($cmd)) {
+        
+        if (!\is_object($cmd)) {
+            $this->logDebug("JeedomHelper: create cmd " . $cmdName);
+
             $cmd = new \honeywellCmd();
             $cmd->setLogicalId($cmdLogicalId);
             $cmd->setName($cmdName);

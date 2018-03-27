@@ -146,7 +146,10 @@ class HoneywellProxyV1
                 
             case '401':
                 return null;
-                
+             
+            case '':
+                throw new \Exception("No http code received, check your network connection.");
+
             default:
                 throw new \Exception("Unexpected http code while doing logon: " . $result[0]);
         }

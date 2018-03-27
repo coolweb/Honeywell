@@ -62,10 +62,11 @@ class honeywell extends eqLogic
         }
         
         $eqLogics = $jeedomHelper->loadEqLogic();
+        $locationId = $jeedomHelper->loadPluginConfiguration("locationId");
         
         foreach ($eqLogics as $eqLogic) {
-            if ($eqLogic->getLogicalId() == $systemStatus->honeywellId) {
-                $jeedomHelper->logDebug("Found temperature system into jeedom, update values...");
+            if ($eqLogic->getLogicalId() == $locationId) {
+                $jeedomHelper->logDebug("Found location into jeedom, update values...");
                 $changed = false;
 
                 $changed = $eqLogic->checkAndUpdateCmd(

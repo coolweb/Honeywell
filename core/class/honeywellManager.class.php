@@ -153,6 +153,7 @@ class HoneywellManager
             \array_push($result->valves, $valve);
         }
 
+        $result->honeywellId = $tempSystem->systemId;
         $result->mode = $tempSystem->systemModeStatus->mode;
 
         return $result;
@@ -407,16 +408,14 @@ class HoneywellManager
         $this->jeedomHelper->logDebug("HoneywellManager - createCommandsForLocation:" .
         "Create current mode cmd for " . $location->name);
 
-        if (!\is_object($this->jeedomHelper->getCmd($eqLogic, "Mode"))) {
-            $this->jeedomHelper->createCmd(
-                $eqLogic,
-                "Mode",
-                __("Mode", __FILE__),
-                "info",
-                "string",
-                true
-            );
-        }
+        $this->jeedomHelper->createCmd(
+            $eqLogic,
+            "Mode",
+            __("Mode", __FILE__),
+            "info",
+            "string",
+            true
+        );
         
         $this->jeedomHelper->logDebug("HoneywellManager - createCommandsForLocation: end");
     }
