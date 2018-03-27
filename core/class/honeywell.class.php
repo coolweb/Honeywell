@@ -187,6 +187,12 @@ class honeywell extends eqLogic
             $setTemperature = $this->getCmd(null, "ChangeTemperature");
             $replace["#SetTemperature_id#"] = is_object($setTemperature) ? $setTemperature->getId() : "";
 
+            $until = $this->getCmd(null, "Until");
+            $replace["#until#"] = is_object($until) ? $until->execCmd() : "";
+
+            $mode = $this->getCmd(null, "Mode");
+            $replace["#mode#"] = is_object($mode) ? $mode->execCmd() : "";
+            
             return template_replace($replace, getTemplate("core", $version, "valve", "honeywell"));
         }
 
