@@ -428,5 +428,23 @@
                 $('span[name="untilMinute#uid#"]').text(honeywell.formatNumber(minutes['#uid#'],2));   
                 
                 honeywell.setColorHeatSetPoint(Number('#wantedTemperature#'));
+
+                $(document).ready(function(){
+                    try
+                    {
+                        // attach modal on plan if widget is on plan
+                        var eqLogicOnPlan =  $('div[data-eqLogic_uid="#uid#"][data-plan_id]');
+                        if(eqLogicOnPlan.length > 0){
+                            eqLogicOnPlan.parent().prepend($('#heatSetPointModal#uid#'));
+                        }
+                    } catch(e){
+                        $('#div_alert').showAlert(
+                        {
+                            message: 'Erreur UI, attacher les modal au plan: ' +
+                            e.toString(), 
+                            level: 'danger'
+                        });
+                    }
+                });
             </script>
 </div>
