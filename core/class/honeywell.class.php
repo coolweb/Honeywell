@@ -200,22 +200,25 @@ class honeywell extends eqLogic
         // thermostat tablet evohome
         if ($deviceType == "0") {
             $autoCmd = $this->getCmd(null, "Auto");
-            $replace["#autoCmdId"] = is_object($autoCmd) ? $autoCmd->getId() : "";
+            $replace["#autoCmdId#"] = is_object($autoCmd) ? $autoCmd->getId() : "";
 
             $customCmd = $this->getCmd(null, "Custom");
-            $replace["#customCmdId"] = is_object($customCmd) ? $customCmd->getId() : "";
+            $replace["#customCmdId#"] = is_object($customCmd) ? $customCmd->getId() : "";
 
             $autoWithEcoCmd = $this->getCmd(null, "AutoWithEco");
-            $replace["#ecoCmdId"] = is_object($autoWithEcoCmd) ? $autoWithEcoCmd->getId() : "";
+            $replace["#ecoCmdId#"] = is_object($autoWithEcoCmd) ? $autoWithEcoCmd->getId() : "";
 
             $awayCmd = $this->getCmd(null, "Away");
-            $replace["#awayCmdId"] = is_object($awayCmd) ? $awayCmd->getId() : "";
+            $replace["#awayCmdId#"] = is_object($awayCmd) ? $awayCmd->getId() : "";
 
             $dayCmd = $this->getCmd(null, "DayOff");
-            $replace["#dayOffCmdId"] = is_object($dayCmd) ? $dayCmd->getId() : "";
+            $replace["#dayOffCmdId#"] = is_object($dayCmd) ? $dayCmd->getId() : "";
 
             $heatingOffCmd = $this->getCmd(null, "HeatingOff");
-            $replace["#heatingOffCmdId"] = is_object($heatingOffCmd) ? $heatingOffCmd->getId() : "";
+            $replace["#heatingOffCmdId#"] = is_object($heatingOffCmd) ? $heatingOffCmd->getId() : "";
+
+            $modeCmd = $this->getCmd(null, "Mode");
+            $replace["#mode#"] = is_object($modeCmd) ? $modeCmd->execCmd() : "";
 
             return template_replace($replace, getTemplate("core", $version, "station", "honeywell"));
         }
