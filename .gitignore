@@ -6,3 +6,4 @@ sftp-config.json
 vendor/*
 dist/*
 node_modules/*
+.vscode/*
