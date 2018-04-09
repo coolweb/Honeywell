@@ -648,22 +648,20 @@ class HoneywellManager
     /**
      * Get task status
      * @param string taskId The identifier of the task for which to retrieve the status.
-     * @return A string containing the status of the taks:
+     * @return string containing the status of the taks:
      * Created, Running, Repeated, Succeeded, Failed
      * @throws Exception The task is not found with the specified identifier.
      */
-    public function getTaskStatus($taskId, $sessionId = null)
+    public function getTaskStatus($taskId)
     {
         $this->jeedomHelper->logDebug("HoneywellManager - getTaskStatus taskId:" . $taskId);
 
+        $sessionId = $this->userSessionManager->retrieveSessionId();
         if ($sessionId == null) {
-            $sessionId = $this->userSessionManager->retrieveSessionId();
-            if ($sessionId == null) {
-                $this->jeedomHelper->logWarning(
-                    "HoneywellManager - getTaskStatus: No session id retrieved, probably bad user/password"
-                );
-                return null;
-            }
+            $this->jeedomHelper->logWarning(
+                "HoneywellManager - getTaskStatus: No session id retrieved, probably bad user/password"
+            );
+            return null;
         }
 
         $taskStatus = $this->honeywellProxy->getTaskStatus($sessionId, $taskId);
@@ -677,18 +675,10 @@ class HoneywellManager
      */
     public function waitForTaskDone($taskId)
     {
-        $sessionId = $this->userSessionManager->retrieveSessionId();
-        if ($sessionId == null) {
-            $this->jeedomHelper->logWarning(
-                "HoneywellManager - waitForTaskDone: No session id retrieved, probably bad user/password"
-            );
-            return null;
-        }
-
         $taskCompleted = false;
 
         while (!$taskCompleted) {
-            $taskStatus = $this->getTaskStatus($taskId, $sessionId);
+            $taskStatus = $this->getTaskStatus($taskId);
 
             if ($taskStatus == "Succeeded" || $taskStatus == "Failed") {
                 $taskCompleted = true;
