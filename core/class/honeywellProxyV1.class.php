@@ -214,6 +214,7 @@ class HoneywellProxyV1
     * @param number $temperature The temperature to set
     * @param string $status Hold | Temporary | Scheduled
     * @param date $nextTime To which time to change the temperature
+    * @return string the identifier of the task created on honeywell server
     */
     public function changeTemperature($sessionId, $deviceId, $temperature, $status = "Hold", $nextTime = null)
     {
@@ -252,11 +253,13 @@ class HoneywellProxyV1
         }
                 
         $result = $this->doJsonCall($temperatureUrl, json_encode($data), "PUT");
-        if (is_string($result) === false) {
+        if ($result[0] != 201) {
             $this->jeedomHelper->logWarning("No task id retrieved change temperature no executed");
         } else {
-            $taskId = json_decode($result)->id;
+            $taskId = $result[1]->id;
             $this->jeedomHelper->logDebug("Task id received:" . $taskId);
+
+            return $taskId;
         }
     }
             
@@ -312,6 +315,23 @@ class HoneywellProxyV1
                 . $systemId . "/status";
 
         $this->doJsonCall($quickActionUrl, null, "GET");
+
+        return $result[1];
+    }
+
+    /**
+     * Get task status.
+     * @param sessionId The identifier of the session.
+     * @param string taskId The identifier of the task for which to retrieve the status.
+     * @return coolweb\honeywell\apiContract\TaskStatus task status.
+     */
+    public function getTaskStatus($sessionId, $taskId)
+    {
+        $this->sessionId = $sessionId;
+
+        $getTaskStatusUrl = $this->honeywellApiUrl . "/commtasks?commTaskId=" . $taskId;
+
+        $result = $this->doJsonCall($getTaskStatusUrl, null, "GET");
 
         return $result[1];
     }

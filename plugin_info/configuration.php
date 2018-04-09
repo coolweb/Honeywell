@@ -28,7 +28,7 @@ if (!isConnect()) {
         <div class="form-group">
             <label class="col-lg-4 control-label">{{Nom d'utilisateur}}</label>
             <div class="col-lg-2">
-                <input class="configKey form-control" data-l1key="userName" />
+                <input class="configKey form-control" data-l1key="username" />
             </div>
         </div>
         <div class="form-group">

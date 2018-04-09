@@ -438,7 +438,9 @@ class HoneywellManager
             return null;
         }
         
-        $this->honeywellProxy->changeTemperature($sessionId, $valveHoneywellId, null, "Scheduled");
+        $taskId = $this->honeywellProxy->changeTemperature($sessionId, $valveHoneywellId, null, "Scheduled");
+
+        $this->waitForTaskDone($taskId);
     }
 
     /**
@@ -581,6 +583,59 @@ class HoneywellManager
                 $this->jeedomHelper->logWarning("Unknown command name to execute :"
                 . $cmdName);
                 break;
+        }
+    }
+
+    /**
+     * Get task status
+     * @param string taskId The identifier of the task for which to retrieve the status.
+     * @return A string containing the status of the taks:
+     * Created, Running, Repeated, Succeeded, Failed
+     * @throws Exception The task is not found with the specified identifier.
+     */
+    public function getTaskStatus($taskId, $sessionId = null)
+    {
+        $this->jeedomHelper->logDebug("HoneywellManager - getTaskStatus taskId:" . $taskId);
+
+        if ($sessionId == null) {
+            $sessionId = $this->userSessionManager->retrieveSessionId();
+            if ($sessionId == null) {
+                $this->jeedomHelper->logWarning(
+                    "HoneywellManager - getTaskStatus: No session id retrieved, probably bad user/password"
+                );
+                return null;
+            }
+        }
+
+        $taskStatus = $this->honeywellProxy->getTaskStatus($sessionId, $taskId);
+
+        return $taskStatus->state;
+    }
+
+    /**
+     * Wait for a task to complete.
+     * @param string $taskId The identifier of the taks to wait to complete.
+     */
+    public function waitForTaskDone($taskId)
+    {
+        $sessionId = $this->userSessionManager->retrieveSessionId();
+        if ($sessionId == null) {
+            $this->jeedomHelper->logWarning(
+                "HoneywellManager - waitForTaskDone: No session id retrieved, probably bad user/password"
+            );
+            return null;
+        }
+
+        $taskCompleted = false;
+
+        while (!$taskCompleted) {
+            $taskStatus = $this->getTaskStatus($taskId, $sessionId);
+
+            if ($taskStatus == "Succeeded" || $taskStatus == "Failed") {
+                $taskCompleted = true;
+            } else {
+                sleep(2);
+            }
         }
     }
 }

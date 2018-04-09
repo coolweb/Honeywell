@@ -38,8 +38,12 @@ class UserSessionManager
         }
 
         $sessionValidity = $this->jeedomHelper->loadPluginConfiguration("sessionIdValidity");
-        if($sessionValidity != ""){
-            if(time() > intval($sessionValidity)){
+        if ($sessionValidity == "") {
+            $sessionValidity = "0";
+        }
+
+        if ($sessionValidity != "") {
+            if (time() > intval($sessionValidity)) {
                 $this->jeedomHelper->logDebug("Session expired, get new token.");
 
                 $sessionResponse = $this->honeywellProxy->openSession($user, $password);
@@ -63,7 +67,7 @@ class UserSessionManager
 
                 return $tokenInCache;
             }
-        }        
+        }
     }
 
     /**
