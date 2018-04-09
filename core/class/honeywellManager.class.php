@@ -141,10 +141,19 @@ class HoneywellManager
             $valve->name = $apiZone->name;
             $valve->indoorTemperature = $apiZone->temperatureStatus->temperature;
             $valve->wantedTemperature = $apiZone->heatSetpointStatus->targetTemperature;
+            $valve->mode = $apiZone->heatSetpointStatus->setpointMode;
+
+            if (is_string($apiZone->heatSetpointStatus->until)) {
+                $valve->until = new \DateTime(
+                    $apiZone->heatSetpointStatus->until,
+                    new \DateTimeZone("UTC")
+                );
+            }
 
             \array_push($result->valves, $valve);
         }
 
+        $result->honeywellId = $tempSystem->systemId;
         $result->mode = $tempSystem->systemModeStatus->mode;
 
         return $result;
@@ -223,50 +232,82 @@ class HoneywellManager
         $this->jeedomHelper->logDebug("HoneywellManager - createCommandForValve:" .
         "Create temperature cmd for " . $valve->name);
             
-        $this->jeedomHelper->createCmd(
-            $eqLogic,
-            "Temperature",
-            __("Température", __FILE__),
-            "info",
-            "numeric",
-            true
-        );
+        if (!\is_object($this->jeedomHelper->getCmd($eqLogic, "Temperature"))) {
+            $this->jeedomHelper->createCmd(
+                $eqLogic,
+                "Temperature",
+                __("Température", __FILE__),
+                "info",
+                "numeric",
+                true
+            );
+        }
         
-        $this->jeedomHelper->createCmd(
-            $eqLogic,
-            "WantedTemperature",
-            __("Température programmée", __FILE__),
-            "info",
-            "numeric",
-            false
-        );
+        if (!\is_object($this->jeedomHelper->getCmd($eqLogic, "WantedTemperature"))) {
+            $this->jeedomHelper->createCmd(
+                $eqLogic,
+                "WantedTemperature",
+                __("Température programmée", __FILE__),
+                "info",
+                "numeric",
+                false
+            );
+        }
         
-        $this->jeedomHelper->createCmd(
-            $eqLogic,
-            "ChangeTemperature",
-            __("Changer température", __FILE__),
-            "action",
-            "message",
-            true
-        );
+        if (!\is_object($this->jeedomHelper->getCmd($eqLogic, "ChangeTemperature"))) {
+            $this->jeedomHelper->createCmd(
+                $eqLogic,
+                "ChangeTemperature",
+                __("Changer température", __FILE__),
+                "action",
+                "message",
+                true
+            );
+        }
         
-        $this->jeedomHelper->createCmd(
-            $eqLogic,
-            "temperatureUp",
-            __("Monter température", __FILE__),
-            "action",
-            "other",
-            true
-        );
+        if (!\is_object($this->jeedomHelper->getCmd($eqLogic, "temperatureUp"))) {
+            $this->jeedomHelper->createCmd(
+                $eqLogic,
+                "temperatureUp",
+                __("Monter température", __FILE__),
+                "action",
+                "other",
+                true
+            );
+        }
         
-        $this->jeedomHelper->createCmd(
-            $eqLogic,
-            "temperatureDown",
-            __("Descendre température", __FILE__),
-            "action",
-            "other",
-            true
-        );
+        if (!\is_object($this->jeedomHelper->getCmd($eqLogic, "temperatureDown"))) {
+            $this->jeedomHelper->createCmd(
+                $eqLogic,
+                "temperatureDown",
+                __("Descendre température", __FILE__),
+                "action",
+                "other",
+                true
+            );
+        }
+
+        if (!\is_object($this->jeedomHelper->getCmd($eqLogic, "Mode"))) {
+            $this->jeedomHelper->createCmd(
+                $eqLogic,
+                "Mode",
+                __("Mode", __FILE__),
+                "info",
+                "string",
+                true
+            );
+        }
+
+        if (!\is_object($this->jeedomHelper->getCmd($eqLogic, "Until"))) {
+            $this->jeedomHelper->createCmd(
+                $eqLogic,
+                "Until",
+                __("Jusqu'à", __FILE__),
+                "info",
+                "string",
+                true
+            );
+        }
 
         $this->jeedomHelper->logDebug("HoneywellManager - createCommandForValve: end");
     }
@@ -283,72 +324,90 @@ class HoneywellManager
         $this->jeedomHelper->logDebug("HoneywellManager - createCommandsForLocation:" .
         "Create auto cmd for " . $location->name);
             
-        $this->jeedomHelper->createCmd(
-            $eqLogic,
-            "Auto",
-            __("Automatique", __FILE__),
-            "action",
-            "other",
-            true
-        );
+        if (!\is_object($this->jeedomHelper->getCmd($eqLogic, "Auto"))) {
+            $this->jeedomHelper->createCmd(
+                $eqLogic,
+                "Auto",
+                __("Automatique", __FILE__),
+                "action",
+                "other",
+                true
+            );
+        }
         
         $this->jeedomHelper->logDebug("HoneywellManager - createCommandsForLocation:" .
         "Create custom cmd for " . $location->name);
-        $this->jeedomHelper->createCmd(
-            $eqLogic,
-            "Custom",
-            __("Personnalisé", __FILE__),
-            "action",
-            "other",
-            true
-        );
-        
+
+        if (!\is_object($this->jeedomHelper->getCmd($eqLogic, "Custom"))) {
+            $this->jeedomHelper->createCmd(
+                $eqLogic,
+                "Custom",
+                __("Personnalisé", __FILE__),
+                "action",
+                "other",
+                true
+            );
+        }
+
         $this->jeedomHelper->logDebug("HoneywellManager - createCommandsForLocation:" .
         "Create auto with eco cmd for " . $location->name);
-        $this->jeedomHelper->createCmd(
-            $eqLogic,
-            "AutoWithEco",
-            __("Economique", __FILE__),
-            "action",
-            "other",
-            true
-        );
+
+        if (!\is_object($this->jeedomHelper->getCmd($eqLogic, "AutoWithEco"))) {
+            $this->jeedomHelper->createCmd(
+                $eqLogic,
+                "AutoWithEco",
+                __("Economique", __FILE__),
+                "action",
+                "other",
+                true
+            );
+        }
         
         $this->jeedomHelper->logDebug("HoneywellManager - createCommandsForLocation:" .
         "Create away cmd for " . $location->name);
-        $this->jeedomHelper->createCmd(
-            $eqLogic,
-            "Away",
-            __("Absent", __FILE__),
-            "action",
-            "other",
-            true
-        );
+
+        if (!\is_object($this->jeedomHelper->getCmd($eqLogic, "Away"))) {
+            $this->jeedomHelper->createCmd(
+                $eqLogic,
+                "Away",
+                __("Absent", __FILE__),
+                "action",
+                "other",
+                true
+            );
+        }
         
         $this->jeedomHelper->logDebug("HoneywellManager - createCommandsForLocation:" .
         "Create day off cmd for " . $location->name);
-        $this->jeedomHelper->createCmd(
-            $eqLogic,
-            "DayOff",
-            __("Journée Off", __FILE__),
-            "action",
-            "other",
-            true
-        );
+
+        if (!\is_object($this->jeedomHelper->getCmd($eqLogic, "DayOff"))) {
+            $this->jeedomHelper->createCmd(
+                $eqLogic,
+                "DayOff",
+                __("Journée Off", __FILE__),
+                "action",
+                "other",
+                true
+            );
+        }
         
         $this->jeedomHelper->logDebug("HoneywellManager - createCommandsForLocation:" .
         "Create heating off cmd for " . $location->name);
-        $this->jeedomHelper->createCmd(
-            $eqLogic,
-            "HeatingOff",
-            __("Chauffage Off", __FILE__),
-            "action",
-            "other",
-            true
-        );
+
+        if (!\is_object($this->jeedomHelper->getCmd($eqLogic, "HeatingOff"))) {
+            $this->jeedomHelper->createCmd(
+                $eqLogic,
+                "HeatingOff",
+                __("Chauffage Off", __FILE__),
+                "action",
+                "other",
+                true
+            );
+        }
 
         $this->jeedomHelper->logDebug("HoneywellManager - createCommandsForLocation:" .
         "Create current mode cmd for " . $location->name);
+
         $this->jeedomHelper->createCmd(
             $eqLogic,
             "Mode",

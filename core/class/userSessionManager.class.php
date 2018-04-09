@@ -9,6 +9,12 @@ class UserSessionManager
     /** @var HoneywellProxyV1 */
     private $honeywellProxy;
 
+    /** @var DateTime */
+    public static $sessionValidity = "0";
+
+    /** @var String */
+    public static $authToken;
+
     /**
      * @param JeedomHelper $jeedomHelper The jeedom helper class
      * @param HoneywellProxyV1 $honeywellProxy The proxy class for honeywell api
@@ -37,36 +43,31 @@ class UserSessionManager
             throw new \Exception($message);
         }
 
-        $sessionValidity = $this->jeedomHelper->loadPluginConfiguration("sessionIdValidity");
-        if ($sessionValidity == "") {
-            $sessionValidity = "0";
-        }
+        $sessionValidity = \coolweb\honeywell\UserSessionManager::$sessionValidity;
 
-        if ($sessionValidity != "") {
-            if (time() > intval($sessionValidity)) {
-                $this->jeedomHelper->logDebug("Session expired, get new token.");
+        if (time() > intval($sessionValidity)) {
+            $this->jeedomHelper->logDebug("Session expired, get new token.");
 
-                $sessionResponse = $this->honeywellProxy->openSession($user, $password);
-                $token = $sessionResponse->access_token;
-                if (is_string($token)) {
-                    $userInfo = $this->honeywellProxy->retrieveUser($token);
+            $sessionResponse = $this->honeywellProxy->openSession($user, $password);
+            $token = $sessionResponse->access_token;
+            if (is_string($token)) {
+                $userInfo = $this->honeywellProxy->retrieveUser($token);
 
-                    if ($userInfo->userId !== $userId) {
-                        $this->jeedomHelper->logDebug("New user id stored: " . $userInfo->userId);
-                        $this->jeedomHelper->savePluginConfiguration("userId", $userInfo->userId);
-                    }
-
-                    $this->jeedomHelper->savePluginConfiguration("sessionId", $sessionResponse->access_token);
-                    $this->jeedomHelper->savePluginConfiguration("sessionIdValidity", time() + (15 * 60));
+                if ($userInfo->userId !== $userId) {
+                    $this->jeedomHelper->logDebug("New user id stored: " . $userInfo->userId);
+                    $this->jeedomHelper->savePluginConfiguration("userId", $userInfo->userId);
                 }
-                
-                return $sessionResponse->access_token;
-            } else {
-                $this->jeedomHelper->logDebug("Session valid, use token in cache.");
-                $tokenInCache = $this->jeedomHelper->loadPluginConfiguration("sessionId");
 
-                return $tokenInCache;
+                \coolweb\honeywell\UserSessionManager::$authToken = $sessionResponse->access_token;
+                \coolweb\honeywell\UserSessionManager::$sessionValidity = time() + (15 * 60);
+            
+                return $sessionResponse->access_token;
             }
+        } else {
+            $this->jeedomHelper->logDebug("Session valid, use token in cache.");
+            $tokenInCache = \coolweb\honeywell\UserSessionManager::$authToken;
+
+            return $tokenInCache;
         }
     }
 

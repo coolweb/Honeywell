@@ -120,7 +120,10 @@ class JeedomHelper
         $unite = "°C"
     ) {
         $cmd = $eqLogic->getCmd(null, $cmdLogicalId);
-        if (!is_object($cmd)) {
+        
+        if (!\is_object($cmd)) {
+            $this->logDebug("JeedomHelper: create cmd " . $cmdName);
+
             $cmd = new \honeywellCmd();
             $cmd->setLogicalId($cmdLogicalId);
             $cmd->setName($cmdName);
@@ -135,6 +138,19 @@ class JeedomHelper
             $cmd->setDisplay("showOndashboard", $showOnDashboard == true ? "1" : "0");
             $cmd->save();
         }
+    }
+
+
+    /**
+     * Retrieve a commnand by logical name.
+     *
+     * @param Object $eqLogic Equipment owning the command.
+     * @param String $cmdName The name of the command.
+     * @return Object The command.
+     */
+    public function getCmd($eqLogic, $cmdName)
+    {
+        return $eqLogic->getCmd(null, $cmdName);
     }
 
     public function clearCacheAndUpdateWidget($eqLogic)

@@ -58,7 +58,8 @@ class HoneywellManagerTest extends TestCase
         'savePluginConfiguration',
         'getEqLogicByLogicalId',
         'createAndSaveEqLogic',
-        'createCmd'])
+        'createCmd',
+        'getCmd'])
         ->getMock();
 
         $this->target = new HoneywellManager(
@@ -141,6 +142,8 @@ class HoneywellManagerTest extends TestCase
         $valve1->temperatureStatus = $tempStatus;
         $heatSetpoint = new HeatSetpointStatus();
         $heatSetpoint->targetTemperature = 15;
+        $heatSetpoint->setpointMode = "TemporaryOverride";
+        $heatSetpoint->until = "2018-03-01T06:00:00Z";
         $valve1->heatSetpointStatus = $heatSetpoint;
     
         $sysMode = new TemperatureModeStatus();
@@ -156,6 +159,7 @@ class HoneywellManagerTest extends TestCase
         $result = $this->target->retrieveTemperatureSystem();
         
         $this->assertEquals(1, sizeof($result->valves));
+        $this->assertEquals($result->valves[0]->until->format("d/m/Y h:i:s"), "01/03/2018 06:00:00");
         $this->assertEquals("Away", $result->mode);
     }
 
@@ -247,7 +251,7 @@ class HoneywellManagerTest extends TestCase
         $valve->name = "test";
 
         $this->jeedomHelper
-        ->expects($this->exactly(5))
+        ->expects($this->exactly(7))
         ->method('createCmd');
 
         $this->target->CreateCommandForValve($eqLogic, $valve);

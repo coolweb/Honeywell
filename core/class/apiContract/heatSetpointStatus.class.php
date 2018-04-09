@@ -8,4 +8,7 @@ class HeatSetpointStatus
 
     /** @var string */
     public $setpointMode;
+
+    /** @var string */
+    public $until;
 }

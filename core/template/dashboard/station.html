@@ -1,4 +1,4 @@
-<div style="width:300px;height:100px;" class="eqLogic-widget eqLogic" data-eqLogic_id="#id#" data-eqLogic_uid="#uid#" data-version="#version#">
+<div style="min-width:150px;min-height:170px;" class="eqLogic-widget eqLogic" data-eqLogic_id="#id#" data-eqLogic_uid="#uid#" data-version="#version#">
     <center class="widget-name">
         <strong>
             <span class="glyphicon glyphicon-home"></span>
@@ -7,75 +7,114 @@
     </center>
     <br />
     <div class="row">
-        <div class="col-xs-10">
-            <center>
-                <div class="btn-group" data-toggle="buttons">
-                    <label class="btn btn-secondary active">
-                    <input type="radio" name="optionsAction" id="auto" checked autocomplete="off">
-                    <span class="glyphicon glyphicon-calendar" title="Suit la programmation"></span>
-                    Programmé
-                </label>
-                <label class="btn btn-secondary">
-                        <input type="radio" name="optionsAction" id="custom" autocomplete="off">
-                        <span class="glyphicon glyphicon-calendar"></span>
-                        Personalisé
-                    </label>
-                <label class="btn btn-secondary">
-                    <input type="radio" name="optionsAction" id="eco" autocomplete="off">
-                    <span class="glyphicon glyphicon-piggy-bank"></span>
-                    Eco
-                </label>
-                    <label class="btn btn-secondary">
-                    <input type="radio" name="optionsAction" id="away" autocomplete="off">
-                    <span class="glyphicon glyphicon-log-out"></span>
-                    Absent
-                </label>
-                    <label class="btn btn-secondary">
-                    <input type="radio" name="optionsAction" id="heatingOff" autocomplete="off">
-                    <span class="glyphicon glyphicon-off"></span>
-                    Off
-                </label>
-                    <label class="btn btn-secondary">
-                    <input type="radio" name="optionsAction" id="dayOff" autocomplete="off">
-                    <span class="glyphicon glyphicon-time"></span>
-                    Journée sans travail
-                </label>
+        <div class="col-xs-12">
+                <div class="btn-group" style="width: 100%;">
+                    <input type="hidden" value="#mode#">
+                    <button type="button" class="btn btn-default dropdown-toggle" style="width: 100%;" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                         <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a data-target="#" href="#" data-cmdId="#autoCmdId#"><span class="glyphicon glyphicon-calendar" title="Suit la programmation"></span><span>Programmé</span></a></li>
+                        <li role="separator" class="divider"></li>
+                        <li><a data-target="#" href="#" data-cmdId="#ecoCmdId#"><span class="glyphicon glyphicon-piggy-bank"></span><span>Eco</span></a></li>
+                        <li role="separator" class="divider"></li>
+                        <li><a data-target="#" href="#" data-cmdId="#customCmdId#"><span class="glyphicon glyphicon-calendar"></span><span>Personnalisé</span></a></li>
+                        <li role="separator" class="divider"></li>
+                        <li><a data-target="#" href="#" data-cmdId="#awayCmdId#"><span class="glyphicon glyphicon-log-out"></span><span>Absent</span></a></li>
+                        <li role="separator" class="divider"></li>
+                        <li><a data-target="#" href="#" data-cmdId="#dayOffCmdId#"><span class="glyphicon glyphicon-time"></span><span>Congé</span></a></li>
+                        <li role="separator" class="divider"></li>
+                        <li><a data-target="#" href="#" data-cmdId="#heatingOffCmdId#"><span class="glyphicon glyphicon-off"></span><span>Off</span></a></li>
+                    </ul>
                 </div>
-            </center>
         </div>
     </div>
 </div>
 
 <script>
-    $('.eqLogic[data-eqLogic_uid=#uid#] .btn-group .btn input').on('change', function () {
-        var checkedId = $('.eqLogic[data-eqLogic_uid=#uid#] [name="optionsAction"]:checked').attr('id');
-        var cmdToExecute;
+    var honeywell = honeywell || {};
+    honeywell.station = honeywell.station || {};
+    honeywell.station.currentMode = '#mode#';
+    honeywell.station.autoCmdId = '#autoCmdId#';
+    honeywell.station.customCmdId = '#customCmdId#';
+    honeywell.station.ecoCmdId = '#ecoCmdId#';
+    honeywell.station.awayCmdId = '#awayCmdId#';
+    honeywell.station.dayOffCmdId = '#dayOffCmdId#';
+    honeywell.station.heatingOffCmdId = '#heatingOffCmdId#';
+    honeywell.station.init = function init() {
+        try
+        {
+           honeywell.station.modeRefreshedFromServer(honeywell.station.currentMode);
+        } catch(e){
+            $('#div_alert').showAlert(
+            {
+                message: 'Erreur d\'initialisation du widget de la station evohome: ' +
+                e.toString(), 
+                level: 'danger'
+            });
+        }
+    };
+    honeywell.station.modeRefreshedFromServer = function modeRefreshedFromServer(mode) {
+        debugger;
+        var modeLabel = '';
+        switch (mode) {
+            case 'Auto':
+                modeLabel = 'Programmé';
+                break;
+            
+            case 'Eco':
+                modeLabel = 'Eco';
+                break;
 
-        if (checkedId === 'auto') {
-            cmdToExecute = '#autoCmdId';
+            case 'Away':
+                modeLabel = 'Absent';
+                break;
+
+            case 'DayOff':
+                modeLabel = 'Congé';
+                break;
+
+            case 'Custom':
+                modeLabel = 'Personnalisé';
+                break;
+
+            case 'HeatingOff':
+                modeLabel = 'Off';
+                break;
+        
+            default:
+                throw new Error('Mode du chauffage non prévu:' + honeywell.station.currentMode);
         }
 
-        if (checkedId === 'custom') {
-            cmdToExecute = '#customCmdId';
+        var button = $('.eqLogic[data-eqLogic_uid=#uid#] .btn-group button');
+        button.text(modeLabel);
+        button.append('<span class="caret"></span>');
+    };
+    honeywell.station.changeMode = function changeMode(cmdId) {
+        try
+        {
+            jeedom.cmd.execute({ id: cmdId });
+        } catch(e){
+            $('#div_alert').showAlert(
+            {
+                message: 'Erreur de changement de mode général du chauffage: ' +
+                e.toString(), 
+                level: 'danger'
+            });
         }
+    };
 
-        if (checkedId === 'eco') {
-            cmdToExecute = '#ecoCmdId';
-        }
-
-        if (checkedId === 'away') {
-            cmdToExecute = '#awayCmdId';
-        }
-
-        if (checkedId === 'heatingOff') {
-            cmdToExecute = '#heatingOffCmdId';
-        }
-
-        if (checkedId === 'dayOff') {
-            cmdToExecute = '#dayOffCmdId';
-        }
-
-        jeedom.cmd.execute({ id: cmdToExecute });
+    $('.eqLogic[data-eqLogic_uid=#uid#] .dropdown-menu li a').on('click', function(){
+        var selectedMode = $(this).attr('data-cmdId'); 
+        honeywell.station.changeMode(selectedMode);
     });
 
+    $(document).ready(function(){
+        honeywell.station.init();
+        var ctrlMode = $('.eqLogic[data-eqLogic_uid=#uid#] .btn-group input[type="hidden"]');
+        ctrlMode.on('change',function(){
+            debugger;
+            honeywell.station.modeRefreshedFromServer(this.val());
+        });
+    });
 </script>

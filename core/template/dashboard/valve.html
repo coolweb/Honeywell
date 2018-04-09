@@ -1,131 +1,450 @@
-<div class="eqLogic-widget eqLogic allowResize" data-eqLogic_id="#id#" data-eqLogic_uid="#uid#" data-version="#version#">
-    <center class="widget-name"><strong><a href="#eqLink#" style="font-size : 1.1em;">#name_display# <span style="font-size: 0.85em;position: relative;top:-2px;">#object_name#</span></a></strong></center>
-    <br />
+<div class="eqLogic-widget eqLogic allowResize" data-eqLogic_id="#id#" data-eqLogic_uid="#uid#" data-version="#version#" style="height: 140px;width: 150px;">
     <div class="row">
-        <center style="font-weight: bolder; font-size: 14pt">
-            #temperature# °C
-        </center>
+        <div class="col-xs-12" style="min-height: 50px;">
+            <center class="widget-name"><strong><a href="#eqLink#" style="font-size : 1.1em;">#name_display# <span style="font-size: 0.85em;position: relative;top:-2px;">#object_name#</span></a></strong></center>
+        </div>
     </div>
-    <div class="row">
-        <center style="font-weight: bolder; font-size: 14pt">
-            <button type="button" name="temperatureDown" class="btn btn-primary">-</button><span name="setPoint">#wantedTemperature#</span>            °C<button type="button" name="temperatureUp" class="btn btn-primary">+</button>
-        </center>
+    <div class="row" name="tempHeatSeatPointRow#uid#">
+        <center style="font-weight: bolder; font-size: 20px;">            
+            #temperature# °C 
+        <span class="statusCmd"></span>
+    </center>
     </div>
-    <div class="row">
-        <center>
-            <div class="btn-group" data-toggle="buttons">
-                <label class="btn btn-secondary">
-                    <input type="radio" name="optionsSetPoint" id="scheduled" autocomplete="off">
-                     Auto
-                </label>
-                <label class="btn btn-secondary active">
-                    <input type="radio" name="optionsSetPoint" id="permanent" checked autocomplete="off">
-                    <span class="glyphicon glyphicon-repeat" title="Permanent"></span>
-                </label>
-                <label class="btn btn-secondary">
-                    <input type="radio" name="optionsSetPoint" id="min30" autocomplete="off"> 30 min
-                </label>
-                <label class="btn btn-secondary">
-                    <input type="radio" name="optionsSetPoint" id="min60" autocomplete="off"> 1h
-                </label>
-                <label class="btn btn-secondary">
-                    <input type="radio" name="optionsSetPoint" id="min120" autocomplete="off"> 2h
-                </label>
+    <div class="row pull-down">
+        <div class="col-xs-12">
+            <div name="setPoint#uid#" style="font-size: 20px; font-weight: bolder;text-align: center;">
+                #wantedTemperature# C°
+                <i name="mode#uid#" class="fa fa-clock-o" aria-hidden="true"></i>
             </div>
-        </center>
+        </div>
     </div>
+
+    <div class="modal fade" id="heatSetPointModal#uid#" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+            <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                  <h4 class="modal-title" id="myModalLabel">Consigne de la zone #name_display#</h4>          
+                </div>
+                <div class="modal-body">
+                        <div class="row">
+                            <div class="col-xs-1">
+                                <div class="checkbox">
+                                    <label>
+                                        <input type="checkbox" name="isPermanent#uid#"> Permanent
+                                    </label>
+                                </div>
+                            </div>                    
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-1">
+                                <span>
+                                    <button type="button" name="timeHourUp#uid#" class="btn btn-default">
+                                        <i class="fa fa-chevron-up" aria-hidden="true"></i>
+                                    </button>
+                                </span>
+                            </div>
+                            <div class="col-xs-1">
+                                <button type="button" name="timeMinuteUp#uid#" class="btn btn-default">
+                                    <i class="fa fa-chevron-up" aria-hidden="true"></i>
+                                </button>
+                            </div>
+                            <div class="col-xs-3">
+                                <center>
+                                    <button type="button" name="heatSetPointUp#uid#" class="btn btn-default">
+                                        <i class="fa fa-chevron-up" aria-hidden="true"></i>
+                                    </button>
+                                </center>
+                            </div>
+                        </div>
+                        <div class="row" style="padding-top: 5px;padding-bottom: 5px;">
+                            <div class="col-xs-1" style="font-size: 16px;">
+                                    <span class="label label-default" name="untilHour#uid#" style="font-size: 16px;"></span>:
+                            </div>
+                            <div class="col-xs-1" style="font-size: 16px;">
+                                    <span class="label label-default" name="untilMinute#uid#" style="font-size: 16px;"></span>
+                            </div>
+                            <div class="col-xs-3">
+                                <center style="font-size: 16px;">
+                                    <span name="wantedTemperature#uid#"></span>C°
+                                </center>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-1">
+                                <span>
+                                    <button type="button" name="timeHourDown#uid#" class="btn btn-default">
+                                        <i class="fa fa-chevron-down" aria-hidden="true"></i>
+                                    </button>
+                                </span>
+                            </div>
+                            <div class="col-xs-1">
+                                <button type="button" name="timeMinuteDown#uid#" class="btn btn-default">
+                                    <i class="fa fa-chevron-down" aria-hidden="true"></i>
+                                </button>
+                            </div>
+                            <div class="col-xs-3">
+                                <center>
+                                    <button type="button" name="heatSetPointDown#uid#" class="btn btn-default">
+                                        <i class="fa fa-chevron-down" aria-hidden="true"></i>
+                                    </button>
+                                </center>
+                            </div>
+                        </div>
+                </div>
+                <div class="modal-footer cmd" data-cmd_id="#SetTemperature_id#">
+                    <i class="fa fa-info-circle" aria-hidden="true"></i><span>Annuler repasse la zone en mode automatique </span>
+                    <button type="button" name="cancel#uid#" class="btn btn-default" data-dismiss="modal">Annuler</button>
+                    <button type="button" name="okHeatSetPoint#uid#" class="btn btn-primary">Appliquer</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <script>    
+                $(document).on('change', 'input[name="isPermanent#uid#"]', function(e, c){
+                    try
+                    {
+                        var isSelected = this.checked;
+            
+                        if(isSelected == true){
+                            $('button[name="timeHourDown#uid#"]').prop('disabled', true);
+                            $('button[name="timeHourUp#uid#"]').prop('disabled', true);
+                            $('button[name="timeMinuteDown#uid#"]').prop('disabled', true);
+                            $('button[name="timeMinuteUp#uid#"]').prop('disabled', true);
+                        } else {
+                            $('button[name="timeHourDown#uid#"]').prop('disabled', false);
+                            $('button[name="timeHourUp#uid#"]').prop('disabled', false);
+                            $('button[name="timeMinuteDown#uid#"]').prop('disabled', false);
+                            $('button[name="timeMinuteUp#uid#"]').prop('disabled', false);
+                        }
+                    } catch(e){
+                        $('#div_alert').showAlert(
+                        {
+                            message: 'Erreur UI d\'activation-désactivation des boutons au clique sur mode permanent checkbox: ' +
+                            e.toString(), 
+                            level: 'danger'
+                        });
+                    }
+                });
+                
+            
+                var honeywell = honeywell || {};
+                honeywell.valves = honeywell.valves || [];
+                honeywell.formatNumber = function formatNumber(numberToFormat, length){
+                    try
+                    {
+                        numberToFormat = numberToFormat.toString();
+                        while(numberToFormat.length < length){
+                            numberToFormat = '0' + numberToFormat;
+                        }
+            
+                        return numberToFormat;
+                    } catch(e){
+                        $('#div_alert').showAlert(
+                        {
+                            message: 'Erreur de formatage d\'un chiffre: numberToFormat:' + numberToFormat + ' length:' + length + ' ' +
+                            e.toString(), 
+                            level: 'danger'
+                        });
+                    }
+                };
+            
+                honeywell.setColorHeatSetPoint = function setColorHeatSetPoint(heatSetPoint){
+                    try
+                    {
+                        if(heatSetPoint<16){
+                            $('div[name="setPoint#uid#"]').closest('div').css('background-color', '#247eb2');
+                        } else {
+                            if(heatSetPoint<19){
+                                $('div[name="setPoint#uid#"]').css('background-color', '#09A603');
+                            } else {
+                                if(heatSetPoint<22){
+                                    $('div[name="setPoint#uid#"]').css('background-color', '#fa9e2d');
+                                } else {
+                                    $('div[name="setPoint#uid#"]').css('background-color', '#FC2F0F');
+                                }
+                            }
+                        }
+                    } catch(e){
+                        $('#div_alert').showAlert(
+                            {
+                            message: 'Erreur UI, changement de couleur par rapport à la consigne: heatSetPoint:' + heatSetPoint + ' ' +
+                            e.toString(), 
+                            level: 'danger'
+                        });
+                    }
+                };
+            
+                $('i[name="mode#uid#"]').removeClass();
+                switch ('#mode#') {
+                    case 'TemporaryOverride':
+                        $('i[name="mode#uid#"]').addClass('fa fa-clock-o');
+                        break;
+                    case 'PermanentOverride':
+                        $('i[name="mode#uid#"]').addClass('fa repeat');
+                        break;        
+                    default:
+                        break;
+                }
+            
+                honeywell.valves['#uid#'] = honeywell.valves['#uid#'] ||
+                {
+                   currentTemp: 0,
+                   tempStatus: 'permanent',
+                   until: undefined,
+                   mode: null
+                };
+            
+                var timeUntil = timeUntil || [];
+                timeUntil['#uid#'] = '#until#' == '' ? '' : '#until#'.substring(11);
+                var hour = hour || [];
+                hour['#uid#'] = 0;
+                var wantedHour = wantedHour || [];
+                wantedHour['#uid#'] = 0;
+                var minutes = minutes || [];
+                minutes['#uid#'] = 0;
+                var wantedMinutes = wantedMinutes || [];
+                wantedMinutes['#uid#'] = 0;
+                    
+                setTimeout(function(){
+                    $('div [data-eqLogic_id="#id#"] .pull-down').each(function() {
+                        var $this = $(this);
+                        $this.css('margin-top', $this.parent().height() - $this.height() - $this.position().top);
+                    });    
+                }, 500);    
+            
+                $('div [name="tempHeatSeatPointRow#uid#"]').on('click', function(){
+                    try
+                    {
+                        $('#heatSetPointModal#uid#').modal('show');
+                    } catch(e){
+                        $('#div_alert').showAlert(
+                        {
+                            message: 'Erreur UI, affichage de la modal de changement de consigne: ' +
+                            e.toString(), 
+                            level: 'danger'
+                        });
+                    }
+                });
+            
+                if(timeUntil['#uid#'] !== ''){
+                    hour['#uid#'] = parseInt(timeUntil['#uid#'].substring(0, 2));
+                    minutes['#uid#'] = parseInt(timeUntil['#uid#'].substring(3, 5));
+                }
+            
+                $('#heatSetPointModal#uid#').on('show.bs.modal', function (e) {
+                    try
+                    {
+                        wantedHour['#uid#'] = hour['#uid#'];
+                        wantedMinutes['#uid#'] = minutes['#uid#'];
+                        $('input[name="untilHour#uid#"]').val(honeywell.formatNumber(wantedHour['#uid#'],2));
+                        $('input[name="untilMinutes#uid#"]').val(honeywell.formatNumber(wantedMinutes['#uid#'],2));
+                        
+            
+                        honeywell.valves['#uid#'].currentTemp = Number('#wantedTemperature#');
+                        honeywell.valves['#uid#'].mode = '#mode#';
+                        $('span[name="wantedTemperature#uid#"]').text(honeywell.valves['#uid#'].currentTemp);
+                    } catch(e){
+                        $('#div_alert').showAlert(
+                        {
+                            message: 'Erreur UI, chargement de la modal de changement de consigne: ' +
+                            e.toString(), 
+                            level: 'danger'
+                        });
+                    }
+                });
+            
+                $('button[name="cancel#uid#"]').on('click', function(){
+                    try
+                    {
+                        if(honeywell.valves['#uid#'].mode !== 'FollowSchedule'){
+                            honeywell.valves['#uid#'].tempStatus = 'scheduled';
+                            jeedom.cmd.execute({ id: '#SetTemperature_id#', value: {
+                                message: honeywell.valves['#uid#'].tempStatus
+                            }});
+                        }
+                    } catch(e){
+                        $('#div_alert').showAlert(
+                        {
+                            message: 'Erreur pour remettre la consigne sur auto: ' +
+                            e.toString(), 
+                            level: 'danger'
+                        });
+                    }
+                });
+            
+                $('button[name="okHeatSetPoint#uid#"]').on('click', function(){
+                    try
+                    {
+                        isPermanentChecked = $('input[name="isPermanent#uid#"]')[0].checked;
+                        
+                        if(isPermanentChecked == true){
+                            honeywell.valves['#uid#'].tempStatus = 'permanent';
+                            honeywell.valves['#uid#'].until = null;
+            
+                            jeedom.cmd.execute({ 
+                                id: '#SetTemperature_id#', 
+                                value: {
+                                    heatSetpoint: honeywell.valves['#uid#'].currentTemp, 
+                                    status: honeywell.valves['#uid#'].tempStatus, 
+                                    until: null
+                                }
+                            });
+                        } else {
+                            honeywell.valves['#uid#'].tempStatus = 'temporary';
+                            honeywell.valves['#uid#'].until = new Date();
+                            honeywell.valves['#uid#'].until.setHours(wantedHour['#uid#']);
+                            honeywell.valves['#uid#'].until.setMinutes(wantedMinutes['#uid#']);
+            
+                            jeedom.cmd.execute({ 
+                                id: '#SetTemperature_id#', 
+                                value: {
+                                    heatSetpoint: honeywell.valves['#uid#'].currentTemp, 
+                                    status: honeywell.valves['#uid#'].tempStatus, 
+                                    until: honeywell.valves['#uid#'].until.toJSON()
+                                }
+                            });
+                        }
+            
+                        $('#heatSetPointModal#uid#').modal('hide');
+                    } catch(e){
+                        $('#div_alert').showAlert(
+                            {
+                                message: 'Erreur de changement de consigne: ' +
+                                e.toString(), 
+                                level: 'danger'
+                            });
+                    }
+                });
+            
+                $('button[name="heatSetPointUp#uid#"]').on('click', function(){
+                    try
+                    {
+                        honeywell.valves['#uid#'].currentTemp += 0.5;
+                        $('span[name="wantedTemperature#uid#"]').text(honeywell.valves['#uid#'].currentTemp);
+                    } catch(e){
+                        $('#div_alert').showAlert(
+                        {
+                            message: 'Erreur UI, augmentation de la consigne: ' +
+                            e.toString(), 
+                            level: 'danger'
+                        });
+                    }
+                });
+            
+                $('button[name="heatSetPointDown#uid#"]').on('click', function(){
+                    try
+                    {
+                        honeywell.valves['#uid#'].currentTemp -= 0.5;
+                        $('span[name="wantedTemperature#uid#"]').text(honeywell.valves['#uid#'].currentTemp);
+                    } catch(e){
+                        $('#div_alert').showAlert(
+                        {
+                            message: 'Erreur UI, diminution de la consigne: ' +
+                            e.toString(), 
+                            level: 'danger'
+                        });
+                    }
+                });
+            
+                $('button[name="timeHourUp#uid#"]').on('click', function(){
+                    try
+                    {
+                        wantedHour['#uid#'] = wantedHour['#uid#'] + 1;
+            
+                        if(wantedHour['#uid#'] >24){
+                            wantedHour['#uid#'] = 0;
+                        }
+                        $('span[name="untilHour#uid#"]').text(honeywell.formatNumber(wantedHour['#uid#'],2));
+                    } catch(e){
+                        $('#div_alert').showAlert(
+                        {
+                            message: 'Erreur UI, augmentation de l\'heure de la consigne: ' +
+                            e.toString(), 
+                            level: 'danger'
+                        });
+                    }
+                });
+            
+                $('button[name="timeHourDown#uid#"]').on('click', function(){
+                    try
+                    {
+                        wantedHour['#uid#'] = wantedHour['#uid#'] -1;
+            
+                        if(wantedHour['#uid#']<0){
+                            wantedHour['#uid#'] = 24;
+                        }
+                        $('span[name="untilHour#uid#"]').text(honeywell.formatNumber(wantedHour['#uid#'],2));
+                    } catch(e){
+                        $('#div_alert').showAlert(
+                        {
+                            message: 'Erreur UI, diminution de l\'heure de la consigne: ' +
+                            e.toString(), 
+                            level: 'danger'
+                        });
+                    }
+                });
+            
+                $('button[name="timeMinuteUp#uid#"]').on('click', function(){
+                    try
+                    {
+                        wantedMinutes['#uid#'] = wantedMinutes['#uid#'] + 1;
+            
+                        if(wantedMinutes['#uid#'] >60){
+                            wantedMinutes['#uid#'] = 0;
+                        }
+                        $('span[name="untilMinute#uid#"]').text(honeywell.formatNumber(wantedMinutes['#uid#'],2));
+                    } catch(e){
+                        $('#div_alert').showAlert(
+                        {
+                            message: 'Erreur UI, augmentation des minutes de la consigne: ' +
+                            e.toString(), 
+                            level: 'danger'
+                        });
+                    }
+                });
+            
+                $('button[name="timeMinuteDown#uid#"]').on('click', function(){
+                    try
+                    {
+                        wantedMinutes['#uid#'] = wantedMinutes['#uid#'] - 1;
+            
+                        if(wantedMinutes['#uid#'] <0){
+                            wantedMinutes['#uid#'] = 60;
+                        }
+                    $('span[name="untilMinute#uid#"]').text(honeywell.formatNumber(wantedMinutes['#uid#'],2));
+                    } catch(e){
+                        $('#div_alert').showAlert(
+                        {
+                            message: 'Erreur UI, diminution des minutes de la consigne: ' +
+                            e.toString(), 
+                            level: 'danger'
+                        });
+                    }
+                });
+            
+                $('span[name="untilHour#uid#"]').text(honeywell.formatNumber(hour['#uid#'],2));
+                $('span[name="untilMinute#uid#"]').text(honeywell.formatNumber(minutes['#uid#'],2));   
+                
+                honeywell.setColorHeatSetPoint(Number('#wantedTemperature#'));
+
+                $(document).ready(function(){
+                    try
+                    {
+                        // attach modal on plan if widget is on plan
+                        var eqLogicOnPlan =  $('div[data-eqLogic_uid="#uid#"][data-plan_id]');
+                        if(eqLogicOnPlan.length > 0){
+                            eqLogicOnPlan.parent().prepend($('#heatSetPointModal#uid#'));
+                        }
+                    } catch(e){
+                        $('#div_alert').showAlert(
+                        {
+                            message: 'Erreur UI, attacher les modal au plan: ' +
+                            e.toString(), 
+                            level: 'danger'
+                        });
+                    }
+                });
+            </script>
 </div>
-
-<script>
-    var honeywell = honeywell || {};
-    honeywell.valves = honeywell.valves || [];
-
-    honeywell.valves['#uid#'] = honeywell.valves['#uid#'] ||
-     {
-        timerChangeTemp: null,
-        currentTemp: 0,
-        tempStatus: 'permanent',
-        until: undefined
-     };
-
-    $('.eqLogic[data-eqLogic_uid=#uid#] button[name="temperatureUp"]').on('click', function () {
-        if (honeywell.valves['#uid#'].timerChangeTemp !== null) {
-            clearTimeout(honeywell.valves['#uid#'].timerChangeTemp);
-        }
-
-        honeywell.valves['#uid#'].timerChangeTemp = setTimeout(function () {
-            honeywell.valves['#uid#'].until = new Date();
-            honeywell.valves['#uid#'].until.setMinutes(honeywell.valves['#uid#'].until.getMinutes() + 120);
-
-            jeedom.cmd.execute({ id: '#SetTemperature_id#', value: 
-            {
-                heatSetpoint: honeywell.valves['#uid#'].currentTemp, 
-                status: honeywell.valves['#uid#'].tempStatus, 
-                until: honeywell.valves['#uid#'].until.toJSON()}});
-        }, 2000);
-
-        honeywell.valves['#uid#'].currentTemp = $('.eqLogic[data-eqLogic_uid=#uid#] span[name="setPoint"]')[0].innerText;
-        honeywell.valves['#uid#'].currentTemp = Number(honeywell.valves['#uid#'].currentTemp) + 0.5;
-        $('.eqLogic[data-eqLogic_uid=#uid#] span[name="setPoint"]')[0].innerText = honeywell.valves['#uid#'].currentTemp;
-    });
-
-    $('.eqLogic[data-eqLogic_uid=#uid#] button[name="temperatureDown"]').on('click', function () {
-        if (honeywell.valves['#uid#'].timerChangeTemp !== null) {
-            clearTimeout(honeywell.valves['#uid#'].timerChangeTemp);
-        }
-
-        honeywell.valves['#uid#'].timerChangeTemp = setTimeout(function () {
-            honeywell.valves['#uid#'].until = new Date();
-            honeywell.valves['#uid#'].until.setMinutes(honeywell.valves['#uid#'].until.getMinutes() + 120);
-            
-            jeedom.cmd.execute({ id: '#SetTemperature_id#', value: 
-            {
-                heatSetpoint: honeywell.valves['#uid#'].currentTemp, 
-                status: honeywell.valves['#uid#'].tempStatus, 
-                until: honeywell.valves['#uid#'].until.toJSON()}});
-        }, 2000);
-
-        honeywell.valves['#uid#'].currentTemp = $('.eqLogic[data-eqLogic_uid=#uid#] span[name="setPoint"]')[0].innerText;
-        honeywell.valves['#uid#'].currentTemp = Number(honeywell.valves['#uid#'].currentTemp) - 0.5;
-        $('.eqLogic[data-eqLogic_uid=#uid#] span[name="setPoint"]')[0].innerText = honeywell.valves['#uid#'].currentTemp;
-    });
-
-    $('.eqLogic[data-eqLogic_uid=#uid#] .btn-group .btn input').on('change', function () {
-        var checkedId = $('.eqLogic[data-eqLogic_uid=#uid#] [name="optionsSetPoint"]:checked').attr('id');
-
-        if(checkedId === 'permanent'){
-            honeywell.valves['#uid#'].tempStatus = 'permanent';
-        }
-
-        if(checkedId === 'scheduled'){
-            honeywell.valves['#uid#'].tempStatus = 'scheduled';
-            var currentTemp = $('.eqLogic[data-eqLogic_uid=#uid#] span[name="setPoint"]')[0].innerText;
-            jeedom.cmd.execute({ id: '#SetTemperature_id#', value: {
-                heatSetpoint: honeywell.valves['#uid#'].currentTemp, 
-                status: honeywell.valves['#uid#'].tempStatus
-            }});
-        }
-
-        if(checkedId === 'min30'){
-            honeywell.valves['#uid#'].tempStatus = 'temporary';
-            
-            honeywell.valves['#uid#'].until = new Date();
-            honeywell.valves['#uid#'].until.setMinutes(honeywell.valves['#uid#'].until.getMinutes() + 30);
-            honeywell.valves['#uid#'].until.setMinutes(honeywell.valves['#uid#'].until.getMinutes() + 120);
-        }
-
-        if(checkedId === 'min60'){
-            honeywell.valves['#uid#'].tempStatus = 'temporary';
-            honeywell.valves['#uid#'].until = new Date();
-            honeywell.valves['#uid#'].until.setMinutes(honeywell.valves['#uid#'].until.getMinutes() + 60);
-            honeywell.valves['#uid#'].until.setMinutes(honeywell.valves['#uid#'].until.getMinutes() + 120);
-        }
-
-        if(checkedId === 'min120'){
-            honeywell.valves['#uid#'].tempStatus = 'temporary';
-            honeywell.valves['#uid#'].until = new Date();
-            honeywell.valves['#uid#'].until.setMinutes(honeywell.valves['#uid#'].until.getMinutes() + 120);
-            honeywell.valves['#uid#'].until.setMinutes(honeywell.valves['#uid#'].until.getMinutes() + 120);
-        }
-    });
-</script>

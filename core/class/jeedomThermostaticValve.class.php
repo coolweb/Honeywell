@@ -14,4 +14,10 @@ class JeedomThermostaticValve
 
     /** @var int */
     public $wantedTemperature;
+
+    /** @var string */
+    public $mode;
+
+    /** @var \DateTime */
+    public $until;
 }

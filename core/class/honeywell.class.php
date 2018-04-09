@@ -24,7 +24,11 @@ if (file_exists(dirname(__FILE__) . "/../../../../core/php/core.inc.php")) {
 class honeywell extends eqLogic
 {
     /*     * *************************Attributs****************************** */
-    
+    /** @var \coolweb\honeywell\JeedomHelper */
+    public static $_jeedomHelper;
+
+    /** @var \coolweb\honeywell\HoneywellManager */
+    public static $_honeywellManager;
     
     
     /*     * ***********************Methode static*************************** */
@@ -33,7 +37,7 @@ class honeywell extends eqLogic
     * Fonction exécutée automatiquement toutes les minutes par Jeedom
     */
     public static function cron15()
-    {
+    {        
         $container = DI\ContainerBuilder::buildDevContainer();
         
         /**
@@ -58,10 +62,11 @@ class honeywell extends eqLogic
         }
         
         $eqLogics = $jeedomHelper->loadEqLogic();
+        $locationId = $jeedomHelper->loadPluginConfiguration("locationId");
         
         foreach ($eqLogics as $eqLogic) {
-            if ($eqLogic->getLogicalId() == $systemStatus->honeywellId) {
-                $jeedomHelper->logDebug("Found temperature system into jeedom, update values...");
+            if ($eqLogic->getLogicalId() == $locationId) {
+                $jeedomHelper->logDebug("Found location into jeedom, update values...");
                 $changed = false;
 
                 $changed = $eqLogic->checkAndUpdateCmd(
@@ -81,16 +86,28 @@ class honeywell extends eqLogic
                     $changed = false;
                         
                     $changed = $eqLogic->checkAndUpdateCmd(
-                            "temperature",
-                            $valve->indoorTemperature
-                        )
-                            || $changed;
+                        "temperature",
+                        $valve->indoorTemperature
+                    )
+                    || $changed;
                             
                     $changed = $eqLogic->checkAndUpdateCmd(
-                            "wantedTemperature",
-                            $valve->wantedTemperature
-                        )
-                            || $changed;
+                        "wantedTemperature",
+                        $valve->wantedTemperature
+                    )
+                    || $changed;
+
+                    $changed = $eqLogic->checkAndUpdateCmd(
+                        "mode",
+                        $valve->mode
+                    )
+                    || $changed;
+
+                    $changed = $eqLogic->checkAndUpdateCmd(
+                        "until",
+                        $valve->until == null ? "" : $valve->until->format("Y-m-d H:i:s")
+                    )
+                    || $changed;
                         
                     if ($changed) {
                         $jeedomHelper->clearCacheAndUpdateWidget($eqLogic);
@@ -171,28 +188,37 @@ class honeywell extends eqLogic
             $setTemperature = $this->getCmd(null, "ChangeTemperature");
             $replace["#SetTemperature_id#"] = is_object($setTemperature) ? $setTemperature->getId() : "";
 
+            $until = $this->getCmd(null, "Until");
+            $replace["#until#"] = is_object($until) ? $until->execCmd() : "";
+
+            $mode = $this->getCmd(null, "Mode");
+            $replace["#mode#"] = is_object($mode) ? $mode->execCmd() : "";
+            
             return template_replace($replace, getTemplate("core", $version, "valve", "honeywell"));
         }
 
         // thermostat tablet evohome
         if ($deviceType == "0") {
             $autoCmd = $this->getCmd(null, "Auto");
-            $replace["#autoCmdId"] = is_object($autoCmd) ? $autoCmd->getId() : "";
+            $replace["#autoCmdId#"] = is_object($autoCmd) ? $autoCmd->getId() : "";
 
             $customCmd = $this->getCmd(null, "Custom");
-            $replace["#customCmdId"] = is_object($customCmd) ? $customCmd->getId() : "";
+            $replace["#customCmdId#"] = is_object($customCmd) ? $customCmd->getId() : "";
 
             $autoWithEcoCmd = $this->getCmd(null, "AutoWithEco");
-            $replace["#ecoCmdId"] = is_object($autoWithEcoCmd) ? $autoWithEcoCmd->getId() : "";
+            $replace["#ecoCmdId#"] = is_object($autoWithEcoCmd) ? $autoWithEcoCmd->getId() : "";
 
             $awayCmd = $this->getCmd(null, "Away");
-            $replace["#awayCmdId"] = is_object($awayCmd) ? $awayCmd->getId() : "";
+            $replace["#awayCmdId#"] = is_object($awayCmd) ? $awayCmd->getId() : "";
 
             $dayCmd = $this->getCmd(null, "DayOff");
-            $replace["#dayOffCmdId"] = is_object($dayCmd) ? $dayCmd->getId() : "";
+            $replace["#dayOffCmdId#"] = is_object($dayCmd) ? $dayCmd->getId() : "";
 
             $heatingOffCmd = $this->getCmd(null, "HeatingOff");
-            $replace["#heatingOffCmdId"] = is_object($heatingOffCmd) ? $heatingOffCmd->getId() : "";
+            $replace["#heatingOffCmdId#"] = is_object($heatingOffCmd) ? $heatingOffCmd->getId() : "";
+
+            $modeCmd = $this->getCmd(null, "Mode");
+            $replace["#mode#"] = is_object($modeCmd) ? $modeCmd->execCmd() : "";
 
             return template_replace($replace, getTemplate("core", $version, "station", "honeywell"));
         }
@@ -203,6 +229,8 @@ class honeywell extends eqLogic
         $container = DI\ContainerBuilder::buildDevContainer();
         
         $jeedomHelper = $container->get("coolweb\honeywell\JeedomHelper");
+        $jeedomHelper->logDebug("Instantiate new objects from DI container.");
+
         $honeywellManager = $container->get("coolweb\honeywell\HoneywellManager");
         
         $jeedomHelper->logDebug("Honeywell plugin: sync devices...");
