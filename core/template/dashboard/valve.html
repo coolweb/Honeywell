@@ -432,15 +432,15 @@
                 $(document).ready(function(){
                     try
                     {
-                        // attach modal on plan if widget is on plan
-                        var eqLogicOnPlan =  $('div[data-eqLogic_uid="#uid#"][data-plan_id]');
-                        if(eqLogicOnPlan.length > 0){
-                            eqLogicOnPlan.parent().prepend($('#heatSetPointModal#uid#'));
+                        // attach modal on parent to have bootstrap base style.
+                        var eqLogicParent = $('div[data-eqLogic_uid="#uid#"]').parent();
+                        if(eqLogicParent.length > 0){
+                            eqLogicParent.prepend($('#heatSetPointModal#uid#'));
                         }
                     } catch(e){
                         $('#div_alert').showAlert(
                         {
-                            message: 'Erreur UI, attacher les modal au plan: ' +
+                            message: 'Erreur UI, attacher les modal au parent: ' +
                             e.toString(), 
                             level: 'danger'
                         });
