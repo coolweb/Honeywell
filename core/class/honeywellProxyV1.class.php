@@ -297,7 +297,16 @@ class HoneywellProxyV1
 
         @$data->permanent = \is_null($nextTime) ? true : false;
                 
-        $this->doJsonCall($quickActionUrl, json_encode($data), "PUT");
+        $result = $this->doJsonCall($quickActionUrl, json_encode($data), "PUT");
+
+        if ($result[0] != 201) {
+            $this->jeedomHelper->logWarning("No task id retrieved set location quick action not executed");
+        } else {
+            $taskId = $result[1]->id;
+            $this->jeedomHelper->logDebug("Task id received:" . $taskId);
+
+            return $taskId;
+        }
     }
 
     /**

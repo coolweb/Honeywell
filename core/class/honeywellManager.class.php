@@ -436,7 +436,9 @@ class HoneywellManager
             return null;
         }
         
-        $this->honeywellProxy->changeTemperature($sessionId, $valveHoneywellId, $temperature);
+        $taskId = $this->honeywellProxy->changeTemperature($sessionId, $valveHoneywellId, $temperature);
+
+        $this->waitForTaskDone($taskId);
     }
     
     /**
@@ -456,7 +458,9 @@ class HoneywellManager
             return null;
         }
         
-        $this->honeywellProxy->changeTemperature($sessionId, $valveHoneywellId, $temperature, "Temporary", $until);
+        $taskId = $this->honeywellProxy->changeTemperature($sessionId, $valveHoneywellId, $temperature, "Temporary", $until);
+
+        $this->waitForTaskDone($taskId);
     }
 
     /**
@@ -538,7 +542,9 @@ class HoneywellManager
             return null;
         }
 
-        $this->honeywellProxy->setLocationQuickAction($sessionId, $locationId, $mode, $until);
+        $taskId = $this->honeywellProxy->setLocationQuickAction($sessionId, $locationId, $mode, $until);
+
+        $this->waitForTaskDone($taskId);
     }
 
     /**

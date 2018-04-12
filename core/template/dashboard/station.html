@@ -8,25 +8,26 @@
     <br />
     <div class="row">
         <div class="col-xs-12">
-                <div class="btn-group" style="width: 100%;">
-                    <input type="hidden" value="#mode#">
-                    <button type="button" class="btn btn-default dropdown-toggle" style="width: 100%;" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                         <span class="caret"></span>
+                <div class="btn-group" style="width: 80%;" 
+                    <input type="hidden" value="">
+                    <button type="button" class="btn btn-primary dropdown-toggle" style="width: 100%;" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        ?? <span class="caret"></span>
                     </button>
                     <ul class="dropdown-menu">
-                        <li><a data-target="#" href="#" data-cmdId="#autoCmdId#"><span class="glyphicon glyphicon-calendar" title="Suit la programmation"></span><span>Programmé</span></a></li>
+                        <li><a data-target="#" href="#" class="cmd" data-cmd_id="#autoCmdId#"><span class="glyphicon glyphicon-calendar" title="Suit la programmation"></span><span>Programmé</span></a></li>
                         <li role="separator" class="divider"></li>
-                        <li><a data-target="#" href="#" data-cmdId="#ecoCmdId#"><span class="glyphicon glyphicon-piggy-bank"></span><span>Eco</span></a></li>
+                        <li><a data-target="#" href="#" class="cmd" data-cmd_id="#ecoCmdId#"><span class="glyphicon glyphicon-piggy-bank"></span><span>Eco</span></a></li>
                         <li role="separator" class="divider"></li>
-                        <li><a data-target="#" href="#" data-cmdId="#customCmdId#"><span class="glyphicon glyphicon-calendar"></span><span>Personnalisé</span></a></li>
+                        <li><a data-target="#" href="#" class="cmd" data-cmd_id="#customCmdId#"><span class="glyphicon glyphicon-calendar"></span><span>Personnalisé</span></a></li>
                         <li role="separator" class="divider"></li>
-                        <li><a data-target="#" href="#" data-cmdId="#awayCmdId#"><span class="glyphicon glyphicon-log-out"></span><span>Absent</span></a></li>
+                        <li><a data-target="#" href="#" class="cmd" data-cmd_id="#awayCmdId#"><span class="glyphicon glyphicon-log-out"></span><span>Absent</span></a></li>
                         <li role="separator" class="divider"></li>
-                        <li><a data-target="#" href="#" data-cmdId="#dayOffCmdId#"><span class="glyphicon glyphicon-time"></span><span>Congé</span></a></li>
+                        <li><a data-target="#" href="#" class="cmd" data-cmd_id="#dayOffCmdId#"><span class="glyphicon glyphicon-time"></span><span>Congé</span></a></li>
                         <li role="separator" class="divider"></li>
-                        <li><a data-target="#" href="#" data-cmdId="#heatingOffCmdId#"><span class="glyphicon glyphicon-off"></span><span>Off</span></a></li>
+                        <li><a data-target="#" href="#" class="cmd" data-cmd_id="#heatingOffCmdId#"><span class="glyphicon glyphicon-off"></span><span>Off</span></a></li>
                     </ul>
                 </div>
+                <span class="statusCmd"></span>
         </div>
     </div>
 </div>
@@ -88,7 +89,7 @@
 
         var button = $('.eqLogic[data-eqLogic_uid=#uid#] .btn-group button');
         button.text(modeLabel);
-        button.append('<span class="caret"></span>');
+        button.append(' <span class="caret"></span>');
     };
     honeywell.station.changeMode = function changeMode(cmdId) {
         try
@@ -105,16 +106,12 @@
     };
 
     $('.eqLogic[data-eqLogic_uid=#uid#] .dropdown-menu li a').on('click', function(){
-        var selectedMode = $(this).attr('data-cmdId'); 
+        var selectedMode = $(this).attr('data-cmd_id'); 
         honeywell.station.changeMode(selectedMode);
     });
 
+    honeywell.station.init();
     $(document).ready(function(){
-        honeywell.station.init();
-        var ctrlMode = $('.eqLogic[data-eqLogic_uid=#uid#] .btn-group input[type="hidden"]');
-        ctrlMode.on('change',function(){
-            debugger;
-            honeywell.station.modeRefreshedFromServer(this.val());
-        });
+        
     });
 </script>

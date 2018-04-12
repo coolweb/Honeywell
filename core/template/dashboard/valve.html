@@ -182,7 +182,7 @@
                         $('i[name="mode#uid#"]').addClass('fa fa-clock-o');
                         break;
                     case 'PermanentOverride':
-                        $('i[name="mode#uid#"]').addClass('fa repeat');
+                        $('i[name="mode#uid#"]').addClass('fa fa-repeat');
                         break;        
                     default:
                         break;
@@ -260,7 +260,7 @@
                     {
                         if(honeywell.valves['#uid#'].mode !== 'FollowSchedule'){
                             honeywell.valves['#uid#'].tempStatus = 'scheduled';
-                            debugger;
+                            
                             jeedom.cmd.execute({ id: '#SetTemperature_id#', value: {
                                 message: honeywell.valves['#uid#'].tempStatus
                             }});
