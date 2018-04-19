@@ -190,9 +190,10 @@ class HoneywellProxyV1
      * Retrieve temperature system status, system mode with all devices
      * Read system id in plugin configuration
      *
+     * @param string sessionId The session id.
      * @return \coolweb\honeywell\apiContract\TemperatureControlSystemStatus
      */
-    public function retrieveTemperatureSystemStatus()
+    public function retrieveTemperatureSystemStatus($sessionId)
     {
         $systemId = $this->jeedomHelper->loadPluginConfiguration("systemId");
         if (empty($systemId)) {
@@ -201,6 +202,7 @@ class HoneywellProxyV1
             throw new \Exception($errorMsg);
         }
 
+        $this->sessionId = $sessionId;
         $temperatureSystemUrl = $this->honeywellApiUrl . "/temperatureControlSystem/"
         . $systemId . "/status";
 

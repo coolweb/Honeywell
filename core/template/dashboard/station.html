@@ -8,8 +8,7 @@
     <br />
     <div class="row">
         <div class="col-xs-12">
-                <div class="btn-group" style="width: 80%;" 
-                    <input type="hidden" value="">
+                <div class="btn-group" style="width: 80%;">
                     <button type="button" class="btn btn-primary dropdown-toggle" style="width: 100%;" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         ?? <span class="caret"></span>
                     </button>
@@ -30,88 +29,83 @@
                 <span class="statusCmd"></span>
         </div>
     </div>
-</div>
-
-<script>
-    var honeywell = honeywell || {};
-    honeywell.station = honeywell.station || {};
-    honeywell.station.currentMode = '#mode#';
-    honeywell.station.autoCmdId = '#autoCmdId#';
-    honeywell.station.customCmdId = '#customCmdId#';
-    honeywell.station.ecoCmdId = '#ecoCmdId#';
-    honeywell.station.awayCmdId = '#awayCmdId#';
-    honeywell.station.dayOffCmdId = '#dayOffCmdId#';
-    honeywell.station.heatingOffCmdId = '#heatingOffCmdId#';
-    honeywell.station.init = function init() {
-        try
-        {
-           honeywell.station.modeRefreshedFromServer(honeywell.station.currentMode);
-        } catch(e){
-            $('#div_alert').showAlert(
+    <script>
+        var honeywell = honeywell || {};
+        honeywell.station = honeywell.station || {};
+        honeywell.station.currentMode = '#mode#';
+        honeywell.station.autoCmdId = '#autoCmdId#';
+        honeywell.station.customCmdId = '#customCmdId#';
+        honeywell.station.ecoCmdId = '#ecoCmdId#';
+        honeywell.station.awayCmdId = '#awayCmdId#';
+        honeywell.station.dayOffCmdId = '#dayOffCmdId#';
+        honeywell.station.heatingOffCmdId = '#heatingOffCmdId#';
+        honeywell.station.init = function init() {
+            try
             {
-                message: 'Erreur d\'initialisation du widget de la station evohome: ' +
-                e.toString(), 
-                level: 'danger'
-            });
-        }
-    };
-    honeywell.station.modeRefreshedFromServer = function modeRefreshedFromServer(mode) {
-        debugger;
-        var modeLabel = '';
-        switch (mode) {
-            case 'Auto':
-                modeLabel = 'Programmé';
-                break;
+               honeywell.station.modeRefreshedFromServer(honeywell.station.currentMode);
+            } catch(e){
+                $('#div_alert').showAlert(
+                {
+                    message: 'Erreur d\'initialisation du widget de la station evohome: ' +
+                    e.toString(), 
+                    level: 'danger'
+                });
+            }
+        };
+        honeywell.station.modeRefreshedFromServer = function modeRefreshedFromServer(mode) {
+            var modeLabel = '';
+            switch (mode) {
+                case 'Auto':
+                    modeLabel = 'Programmé';
+                    break;
+                
+                case 'Eco':
+                    modeLabel = 'Eco';
+                    break;
+    
+                case 'Away':
+                    modeLabel = 'Absent';
+                    break;
+    
+                case 'DayOff':
+                    modeLabel = 'Congé';
+                    break;
+    
+                case 'Custom':
+                    modeLabel = 'Personnalisé';
+                    break;
+    
+                case 'HeatingOff':
+                    modeLabel = 'Off';
+                    break;
             
-            case 'Eco':
-                modeLabel = 'Eco';
-                break;
-
-            case 'Away':
-                modeLabel = 'Absent';
-                break;
-
-            case 'DayOff':
-                modeLabel = 'Congé';
-                break;
-
-            case 'Custom':
-                modeLabel = 'Personnalisé';
-                break;
-
-            case 'HeatingOff':
-                modeLabel = 'Off';
-                break;
-        
-            default:
-                throw new Error('Mode du chauffage non prévu:' + honeywell.station.currentMode);
-        }
-
-        var button = $('.eqLogic[data-eqLogic_uid=#uid#] .btn-group button');
-        button.text(modeLabel);
-        button.append(' <span class="caret"></span>');
-    };
-    honeywell.station.changeMode = function changeMode(cmdId) {
-        try
-        {
-            jeedom.cmd.execute({ id: cmdId });
-        } catch(e){
-            $('#div_alert').showAlert(
+                default:
+                    throw new Error('Mode du chauffage non prévu:' + honeywell.station.currentMode);
+            }
+    
+            var button = $('.eqLogic[data-eqLogic_uid=#uid#] .btn-group button');
+            button.text(modeLabel);
+            button.append(' <span class="caret"></span>');
+        };
+        honeywell.station.changeMode = function changeMode(cmdId) {
+            try
             {
-                message: 'Erreur de changement de mode général du chauffage: ' +
-                e.toString(), 
-                level: 'danger'
-            });
-        }
-    };
-
-    $('.eqLogic[data-eqLogic_uid=#uid#] .dropdown-menu li a').on('click', function(){
-        var selectedMode = $(this).attr('data-cmd_id'); 
-        honeywell.station.changeMode(selectedMode);
-    });
-
-    honeywell.station.init();
-    $(document).ready(function(){
-        
-    });
-</script>
+                jeedom.cmd.execute({ id: cmdId });
+            } catch(e){
+                $('#div_alert').showAlert(
+                {
+                    message: 'Erreur de changement de mode général du chauffage: ' +
+                    e.toString(), 
+                    level: 'danger'
+                });
+            }
+        };
+    
+        $('.eqLogic[data-eqLogic_uid=#uid#] .dropdown-menu li a').on('click', function(){
+            var selectedMode = $(this).attr('data-cmd_id'); 
+            honeywell.station.changeMode(selectedMode);
+        });
+    
+        honeywell.station.init();
+    </script>
+</div>

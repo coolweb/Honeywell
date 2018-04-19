@@ -129,7 +129,7 @@ class HoneywellManager
             return null;
         }
 
-        $tempSystem = $this->honeywellProxy->retrieveTemperatureSystemStatus();
+        $tempSystem = $this->honeywellProxy->retrieveTemperatureSystemStatus($sessionId);
         $apiZones = $tempSystem->zones;
         $result = new JeedomTemperatureSystem();
 
@@ -503,7 +503,8 @@ class HoneywellManager
         
         $taskId = $this->honeywellProxy->changeTemperature($sessionId, $valveHoneywellId, null, "Scheduled");
 
-        $this->waitForTaskDone($taskId);
+        $taskResult = $this->waitForTaskDone($taskId);
+        $this->jeedomHelper->logDebug("Task id:" . $taskId . " succeeded:" . $taskResult);
     }
 
     /**
@@ -678,19 +679,45 @@ class HoneywellManager
     /**
      * Wait for a task to complete.
      * @param string $taskId The identifier of the taks to wait to complete.
+     * @return boolean indicating if task is success.
      */
     public function waitForTaskDone($taskId)
     {
         $taskCompleted = false;
+        $taskSuceeded = false;
 
         while (!$taskCompleted) {
             $taskStatus = $this->getTaskStatus($taskId);
 
             if ($taskStatus == "Succeeded" || $taskStatus == "Failed") {
                 $taskCompleted = true;
+                if ($taskStatus == "Succeeded") {
+                    $taskSuceeded = true;
+                }
             } else {
                 sleep(2);
             }
+        }
+
+        return $taskSuceeded;
+    }
+
+    /**
+     * Set info command value of valve eqLogic.
+     * @param string The identifier of the valve in honeywell.
+     * @param string The mode value of the valve.
+     */
+    public function setEqLogicValveMode($valveId, $mode)
+    {
+        $eqLogic = $this->jeedomHelper->getEqLogicByLogicalId($valveId);
+
+        $changed = $eqLogic->checkAndUpdateCmd(
+            "mode",
+            $mode
+        );
+
+        if ($changed) {
+            $this->jeedomHelper->clearCacheAndUpdateWidget($eqLogic);
         }
     }
 }

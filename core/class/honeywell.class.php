@@ -37,7 +37,7 @@ class honeywell extends eqLogic
     * Fonction exécutée automatiquement toutes les minutes par Jeedom
     */
     public static function cron15()
-    {        
+    {
         $container = DI\ContainerBuilder::buildDevContainer();
         
         /**
@@ -72,8 +72,7 @@ class honeywell extends eqLogic
                 $changed = $eqLogic->checkAndUpdateCmd(
                     "Mode",
                     $systemStatus->mode
-                )
-                    || $changed;
+                );
 
                 if ($changed) {
                     $jeedomHelper->clearCacheAndUpdateWidget($eqLogic);
@@ -303,6 +302,7 @@ class honeywellCmd extends cmd
         $cmdValue = $this->getValue();
                         
         $honeywellManager->execCommand($honeywellId, $cmdLogicalId, $_options);
+        \honeywell::cron15();
     }
     
     /*     * **********************Getteur Setteur*************************** */
