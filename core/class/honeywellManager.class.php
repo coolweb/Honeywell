@@ -458,7 +458,13 @@ class HoneywellManager
             return null;
         }
         
-        $taskId = $this->honeywellProxy->changeTemperature($sessionId, $valveHoneywellId, $temperature, "Temporary", $until);
+        $taskId = $this->honeywellProxy->changeTemperature(
+            $sessionId,
+            $valveHoneywellId,
+            $temperature,
+            "Temporary",
+            $until
+        );
 
         $this->waitForTaskDone($taskId);
     }
