@@ -7,5 +7,6 @@
     "require": "3.0.0",
     "category": "energy",
     "version": "0.1.0",
-    "documentation": "https://coolweb.github.io/Honeywell"
+    "documentation": "https://coolweb.github.io/Honeywell",
+    "changelog": "https://coolweb.github.io/Honeywell/fr_FR/changelog"
 }
